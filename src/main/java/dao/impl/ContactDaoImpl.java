@@ -36,7 +36,7 @@ public class ContactDaoImpl implements ContactDao {
                 return contact;
             }
         }
-        return new Contact();  // зачем создавать новый контакт если не нашли по id ?
+        return new Contact();  // зачем создавать новый контакт если не нашли по id?
     }
 
     @Override
