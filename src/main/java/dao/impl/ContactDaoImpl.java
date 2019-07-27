@@ -47,23 +47,23 @@ public class ContactDaoImpl implements ContactDao {
                 return contact;
             }
         }
-        return updatedContact; // зачем возвращать updatedContact если не смогли апдейтить?
+        return updatedContact; // зачем возвращать updatedContact если не смогли редактировать?
     }
 
     @Override
-    public boolean removeContact(int id) {
+    public boolean removeContact(int id) {  //ДЗ - Реализовать метод
         for (Contact contact : contacts) {
             if (Objects.equals(contact.getId(), id)) {
                 contacts[id] = null;
                 return true;
             }
         }
-        System.out.println("Contact with id = " + id + " not found");
+        System.out.println("Contact with id = " + id + " not found.");
         return false;
     }
 
     @Override
-    public void showAllContacts() {
+    public void showAllContacts() { //ДЗ - Реализовать метод
         for (Contact contact : contacts) {
             System.out.println(contact);
         }
