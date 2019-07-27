@@ -36,7 +36,7 @@ public class ContactDaoImpl implements ContactDao {
                 return contact;
             }
         }
-        return new Contact();
+        return new Contact();  // зачем создавать новый контакт если не нашли по id ?
     }
 
     @Override
@@ -47,17 +47,26 @@ public class ContactDaoImpl implements ContactDao {
                 return contact;
             }
         }
-        return updatedContact;
+        return updatedContact; // зачем возвращать updatedContact если не смогли апдейтить?
     }
 
     @Override
     public boolean removeContact(int id) {
+        for (Contact contact : contacts) {
+            if (Objects.equals(contact.getId(), id)) {
+                contacts[id] = null;
+                return true;
+            }
+        }
+        System.out.println("Contact with id = " + id + " not found");
         return false;
     }
 
     @Override
     public void showAllContacts() {
-
+        for (Contact contact : contacts) {
+            System.out.println(contact);
+        }
     }
 
     private boolean isStoreHasEmptyCells() {
