@@ -36,7 +36,7 @@ public class ContactDaoImpl implements ContactDao {
                 return contact;
             }
         }
-        return new Contact();  // зачем создавать новый контакт если не нашли по id?
+        return new Contact();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     @Override
-    public boolean removeContact(int id) {  //ДЗ - Реализовать метод
+    public boolean removeContact(int id) {
         for (Contact contact : contacts) {
             if (Objects.equals(contact.getId(), id)) {
                 contacts[id] = null;
@@ -63,7 +63,7 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     @Override
-    public void showAllContacts() { //ДЗ - Реализовать метод
+    public void showAllContacts() {
         for (Contact contact : contacts) {
             System.out.println(contact);
         }

@@ -39,6 +39,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Contact updateContact(Contact updatedContact) {
+        menuUpdate();
         return null;
     }
 
@@ -50,5 +51,11 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public void showAllContacts() {
 
+    }
+    private int menuUpdate() {
+        int numberOfMenu = 1;
+        System.out.println("1. Name: " + "2. Last name");
+        System.out.println("Enter number of field for update: ");
+        return numberOfMenu;
     }
 }
