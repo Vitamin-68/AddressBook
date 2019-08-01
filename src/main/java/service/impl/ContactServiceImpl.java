@@ -3,7 +3,6 @@ package service.impl;
 import dao.ContactDao;
 import dao.impl.ContactDaoImpl;
 import entity.Contact;
-import javafx.scene.transform.Scale;
 import service.ContactService;
 
 import java.time.LocalDateTime;
@@ -13,6 +12,10 @@ public class ContactServiceImpl implements ContactService {
 
     private static final ContactDao contactDao = new ContactDaoImpl();
     private static Scanner scanner = new Scanner(System.in);
+
+    public ContactServiceImpl(ContactDaoImpl contactDao) {
+
+    }
 
     @Override
     public Contact createContact() {
@@ -40,6 +43,10 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Contact updateContact(Contact updatedContact) {
         menuUpdate();
+//        try {
+//
+//        }
+
         return null;
     }
 
@@ -52,10 +59,9 @@ public class ContactServiceImpl implements ContactService {
     public void showAllContacts() {
 
     }
-    private int menuUpdate() {
-        int numberOfMenu = 1;
-        System.out.println("1. Name: " + "2. Last name");
+    public void menuUpdate() {
+//        int numberOfMenu = 1;
+        System.out.println("1. Name \n2. Last name \n3. Age \n4.Phone number\n5.Is married\n");
         System.out.println("Enter number of field for update: ");
-        return numberOfMenu;
     }
 }

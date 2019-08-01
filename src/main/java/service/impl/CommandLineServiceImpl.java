@@ -1,6 +1,7 @@
 package service.impl;
 
 import dao.impl.ContactDaoImpl;
+import exceptions.MyAddressBookException;
 import service.CommandLineService;
 import service.ContactService;
 
@@ -10,7 +11,7 @@ public class CommandLineServiceImpl implements CommandLineService {
     private static final Scanner scannner = new Scanner(System.in);
     private static final ContactService service = new ContactServiceImpl(new ContactDaoImpl());
 
-    public static void start(){
+    public static void start() throws MyAddressBookException {
         CommandLineService.run(scannner, service);
 
     }
