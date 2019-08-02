@@ -18,7 +18,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact createContact() {
+    public Contact createContact(Scanner scanner) {
         Contact contact = new Contact();
         System.out.println("Enter name of contact:");
         contact.setName(scanner.next());
@@ -36,12 +36,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact findById(int id) {
-        return contactDao.findById(id);
-    }
-
-    @Override
-    public Contact updateContact(Contact updatedContact) {
+    public Contact updateContact(Scanner scanner) {
         menuUpdate();
 //        try {
 //
@@ -51,7 +46,8 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public boolean removeContact(int id) {
+    public boolean removeContact(Scanner scanner) {
+
         return false;
     }
 
@@ -59,6 +55,21 @@ public class ContactServiceImpl implements ContactService {
     public void showAllContacts() {
 
     }
+
+    @Override
+    public Contact findById(Scanner scanner) {
+        System.out.println("Enter id of contact (0-9)");// как тут можно получить длину нашего массива contacts.length?
+
+            while (scanner.hasNextInt() != true) {
+                int id = scanner.nextInt();
+                if (id>0 && id <=10) {
+                    return contactDao.findById(id);
+                }
+                id = scanner.nextInt();
+            }
+
+    }
+
     public void menuUpdate() {
 //        int numberOfMenu = 1;
         System.out.println("1. Name \n2. Last name \n3. Age \n4.Phone number\n5.Is married\n");

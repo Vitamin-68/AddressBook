@@ -1,7 +1,7 @@
 package service;
 
 import exceptions.MyAddressBookException;
-import service.impl.ResponseCode;
+import constants.ResponseCode;
 
 import java.util.Scanner;
 
@@ -10,7 +10,7 @@ public interface CommandLineService {
     static void run(Scanner scanner, ContactService service) throws MyAddressBookException {
         boolean exit = true;
         do {
-            System.out.println("Chose your wish:");
+            System.out.println("Enter number of operation (0-5):");
             showMenu();
             try {
                 if (scanner.hasNextInt()) {

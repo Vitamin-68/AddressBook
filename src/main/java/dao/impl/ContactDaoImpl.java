@@ -1,5 +1,6 @@
 package dao.impl;
 
+import constants.ResponseCode;
 import dao.ContactDao;
 import entity.Contact;
 

@@ -1,6 +1,6 @@
 package exceptions;
 
-import service.impl.ResponseCode;
+import constants.ResponseCode;
 
 public class MyAddressBookException extends Exception {
     public ResponseCode code;
