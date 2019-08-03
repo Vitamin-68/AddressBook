@@ -1,8 +1,10 @@
 package service.impl;
 
+import constants.ResponseCode;
 import dao.ContactDao;
 import dao.impl.ContactDaoImpl;
 import entity.Contact;
+import exceptions.MyAddressBookException;
 import service.ContactService;
 
 import java.time.LocalDateTime;
@@ -11,7 +13,6 @@ import java.util.Scanner;
 public class ContactServiceImpl implements ContactService {
 
     private static final ContactDao contactDao = new ContactDaoImpl();
-    private static Scanner scanner = new Scanner(System.in);
 
     public ContactServiceImpl(ContactDaoImpl contactDao) {
 
@@ -37,12 +38,58 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Contact updateContact(Scanner scanner) {
-        menuUpdate();
-//        try {
-//
-//        }
-
-        return null;
+        Contact contact = this.findById(scanner);
+        boolean exit = true;
+        do {
+            System.out.println("Enter number of field for update (2-6)\n or 0 for Exit:");
+            try {
+                if (scanner.hasNextInt()) {
+                    int numberOfField = scanner.nextInt();
+                    switch (numberOfField) {
+                        case 2: {
+                            System.out.println("Enter new name:");
+                            contact.setName(scanner.next());
+                            contact.setUpdateTime(LocalDateTime.now());
+                        }
+                        case 3: {
+                            System.out.println("Enter new last name:");
+                            contact.setLastName(scanner.next());
+                            contact.setUpdateTime(LocalDateTime.now());
+                        }
+                        case 4: {
+                            System.out.println("Enter new age:");
+                            contact.setAge(scanner.nextInt());
+                            contact.setUpdateTime(LocalDateTime.now());
+                        }
+                        case 5: {
+                            System.out.println("Enter new number phone:");
+                            contact.setPhoneNumber(scanner.next());
+                            contact.setUpdateTime(LocalDateTime.now());
+                        }
+                        case 6: {
+                            System.out.println("Is contact married(y/n)?");
+                            contact.setMarried(scanner.nextBoolean());
+                            contact.setUpdateTime(LocalDateTime.now());
+                        }
+                        case 0: {
+                            System.out.println("Update is done.");
+                            exit = false;
+                            break;
+                        }
+                        default: {
+                            throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
+                                    "You enter wrong num of operation");
+                        }
+                    }
+                } else {
+                    System.out.println("You entered wrong number");
+                    scanner.next();
+                }
+            } catch (MyAddressBookException e) {
+                System.out.println(e.getMessage());
+            }
+        } while (exit);
+        return contactDao.updateContact(contact);
     }
 
     @Override
@@ -58,21 +105,18 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Contact findById(Scanner scanner) {
-        System.out.println("Enter id of contact (0-9)");// как тут можно получить длину нашего массива contacts.length?
-
-            while (scanner.hasNextInt() != true) {
+        for (; ; ) {
+            System.out.println("Enter id of contact (1-" + ContactDaoImpl.getNumberOfContacts() + ");");
+            if (scanner.hasNextInt()) {
                 int id = scanner.nextInt();
-                if (id>0 && id <=10) {
-                    return contactDao.findById(id);
+                if (id > 0 && id <= ContactDaoImpl.getNumberOfContacts()) {
+                    return contactDao.findById(id - 1);
                 }
-                id = scanner.nextInt();
+            } else {
+                scanner.next();
+                System.out.println("You enter wrong number");
             }
-
+        }
     }
 
-    public void menuUpdate() {
-//        int numberOfMenu = 1;
-        System.out.println("1. Name \n2. Last name \n3. Age \n4.Phone number\n5.Is married\n");
-        System.out.println("Enter number of field for update: ");
-    }
 }

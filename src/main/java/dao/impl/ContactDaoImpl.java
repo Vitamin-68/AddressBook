@@ -9,9 +9,17 @@ import java.util.Objects;
 public class ContactDaoImpl implements ContactDao {
 
     private static int generator = 0;
+    private static int numberOfContacts = 10;
 
-    private static Contact[] contacts = new Contact[10];
+    private static Contact[] contacts = new Contact[numberOfContacts];
 
+    public static int getNumberOfContacts() {
+        return numberOfContacts;
+    }
+
+    public static void setNumberOfContacts(int numberOfContacts) {
+        ContactDaoImpl.numberOfContacts = numberOfContacts;
+    }
 
     @Override
     public Contact createContact(Contact newContact) {
@@ -34,7 +42,17 @@ public class ContactDaoImpl implements ContactDao {
     public Contact findById(int id) {
         for (Contact contact : contacts) {
             if (Objects.equals(contact.getId(), id)) {
+                System.out.println("1. ID: " + contact.getId());
+                System.out.println("2. Name: " + contact.getName());
+                System.out.println("3. Last name: " + contact.getLastName());
+                System.out.println("4. Age: " + contact.getAge());
+                System.out.println("5. Phone number: " + contact.getPhoneNumber());
+                System.out.println("6. Martial status: : " + (contact.isMarried() ? "Married" : "No married"));
+                System.out.println("7. Data of create: " + contact.getCreateDate());
+                System.out.println("8. Data of update: " + contact.getUpdateTime()); // так дата или время?
                 return contact;
+            } else {
+                System.out.println("Contact with id " + id + "don't exist");
             }
         }
         return new Contact();
@@ -59,7 +77,7 @@ public class ContactDaoImpl implements ContactDao {
                 return true;
             }
         }
-        System.out.println("Contact with id = " + id + " not found.");
+        System.out.println("Contact with ID = " + id + " not found.");
         return false;
     }
 
@@ -78,4 +96,5 @@ public class ContactDaoImpl implements ContactDao {
         }
         return false;
     }
+
 }
