@@ -78,7 +78,7 @@ public class ContactServiceImpl implements ContactService {
                         }
                         default: {
                             throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
-                                    "You enter wrong num of operation");
+                                    "You enter wrong number of operation");
                         }
                     }
                 } else {
@@ -94,13 +94,24 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public boolean removeContact(Scanner scanner) {
+        for (; ; ) {
+            System.out.println("Enter number ID for delete(1-" + ContactDaoImpl.getNumberOfContacts() + "):");
+            if (scanner.hasNextInt()) {
+                int id = scanner.nextInt();
+                if (id > 0 && id <= ContactDaoImpl.getNumberOfContacts()) {
+                    return contactDao.removeContact(id - 1);
+                }
+            } else {
+                System.out.println("You enter wrong number");
+                scanner.next();
+            }
+        }
 
-        return false;
     }
 
     @Override
     public void showAllContacts() {
-
+        contactDao.showAllContacts();
     }
 
     @Override
@@ -113,8 +124,8 @@ public class ContactServiceImpl implements ContactService {
                     return contactDao.findById(id - 1);
                 }
             } else {
-                scanner.next();
                 System.out.println("You enter wrong number");
+                scanner.next();
             }
         }
     }

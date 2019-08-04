@@ -41,7 +41,7 @@ public class ContactDaoImpl implements ContactDao {
     @Override
     public Contact findById(int id) {
         for (Contact contact : contacts) {
-            if (Objects.equals(contact.getId(), id)) {
+            if (contact != null && Objects.equals(contact.getId(), id)) {
                 System.out.println("1. ID: " + contact.getId());
                 System.out.println("2. Name: " + contact.getName());
                 System.out.println("3. Last name: " + contact.getLastName());
@@ -50,9 +50,9 @@ public class ContactDaoImpl implements ContactDao {
                 System.out.println("6. Martial status: : " + (contact.isMarried() ? "Married" : "No married"));
                 System.out.println("7. Data of create: " + contact.getCreateDate());
                 System.out.println("8. Data of update: " + contact.getUpdateTime()); // так дата или время?
+//                насколько я понимаю Дата (и время) создания заносится при создании,
+//                а дата и время апдейта каждый раз меняются при апдейте.
                 return contact;
-            } else {
-                System.out.println("Contact with id " + id + "don't exist");
             }
         }
         return new Contact();
@@ -66,14 +66,17 @@ public class ContactDaoImpl implements ContactDao {
                 return contact;
             }
         }
-        return updatedContact; // зачем возвращать updatedContact если не смогли редактировать?
+        return updatedContact; // на занятии уточнить возврат контакта и там прописать замену contact.setUpdateTime()
     }
 
     @Override
     public boolean removeContact(int id) {
+        int index = 0;
         for (Contact contact : contacts) {
-            if (Objects.equals(contact.getId(), id)) {
-                contacts[id] = null;
+            index++;
+            if (contact != null && Objects.equals(contact.getId(), id)) {
+                contacts[index] = null;
+                System.out.println("Contact with ID = " + id + " was deleted successfully");
                 return true;
             }
         }
