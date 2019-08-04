@@ -24,12 +24,15 @@ public class ContactDaoImpl implements ContactDao {
     @Override
     public Contact createContact(Contact newContact) {
         if (isStoreHasEmptyCells()) {
+            int index = 0;
             for (Contact contact : contacts) {
                 if (Objects.isNull(contact)) {
                     newContact.setId(++generator);
                     contact = newContact;
+                    contacts[index] = contact;
                     return contact;
                 }
+                index++;
             }
         } else {
             System.out.println("We haven`t empty cell in our DB.");
@@ -49,36 +52,38 @@ public class ContactDaoImpl implements ContactDao {
                 System.out.println("5. Phone number: " + contact.getPhoneNumber());
                 System.out.println("6. Martial status: : " + (contact.isMarried() ? "Married" : "No married"));
                 System.out.println("7. Data of create: " + contact.getCreateDate());
-                System.out.println("8. Data of update: " + contact.getUpdateTime()); // так дата или время?
-//                насколько я понимаю Дата (и время) создания заносится при создании,
-//                а дата и время апдейта каждый раз меняются при апдейте.
+                System.out.println("8. Data of update: " + contact.getUpdateTime()); //название метода некорректное будет и дата и время
                 return contact;
             }
         }
+        System.out.println("Contact with ID = " + id + " not found.");
         return new Contact();
     }
 
     @Override
     public Contact updateContact(Contact updatedContact) {
+        int index = 0;
         for (Contact contact : contacts) {
             if (Objects.equals(contact.getId(), updatedContact.getId())) {
                 contact = updatedContact;
+                contacts[index] = contact;
                 return contact;
             }
+            index++;
         }
-        return updatedContact; // на занятии уточнить возврат контакта и там прописать замену contact.setUpdateTime()
+        return updatedContact;
     }
 
     @Override
     public boolean removeContact(int id) {
         int index = 0;
         for (Contact contact : contacts) {
-            index++;
             if (contact != null && Objects.equals(contact.getId(), id)) {
                 contacts[index] = null;
                 System.out.println("Contact with ID = " + id + " was deleted successfully");
                 return true;
             }
+            index++;
         }
         System.out.println("Contact with ID = " + id + " not found.");
         return false;

@@ -17,18 +17,24 @@ public interface CommandLineService {
                     switch (scanner.nextInt()) {
                         case 1: {
                             service.createContact(scanner);
+                            break;
                         }
                         case 2: {
                             service.updateContact(scanner);
+                            break;
                         }
                         case 3: {
                             service.removeContact(scanner);
+                            break;
                         }
                         case 4: {
                             service.showAllContacts();
+                            break;
                         }
                         case 5: {
-                            System.out.println((service.findById(scanner)));
+//                            System.out.println(service.findById(scanner));
+                            service.findById(scanner);
+                            break;
                         }
                         case 0: {
                             System.out.println("Thank you that use our app. Good bye.");

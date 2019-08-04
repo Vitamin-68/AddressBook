@@ -26,6 +26,10 @@ public class ContactServiceImpl implements ContactService {
         System.out.println("Enter last name of contact:");
         contact.setLastName(scanner.next());
         System.out.println("Enter age of contact");
+        while (!scanner.hasNextInt()) {
+            System.out.println("Indicate age in numbers!");
+            scanner.next();
+        }
         contact.setAge(scanner.nextInt());
         System.out.println("Enter phone number of contact");
         contact.setPhoneNumber(scanner.next());
@@ -50,26 +54,35 @@ public class ContactServiceImpl implements ContactService {
                             System.out.println("Enter new name:");
                             contact.setName(scanner.next());
                             contact.setUpdateTime(LocalDateTime.now());
+                            break;
                         }
                         case 3: {
                             System.out.println("Enter new last name:");
                             contact.setLastName(scanner.next());
                             contact.setUpdateTime(LocalDateTime.now());
+                            break;
                         }
                         case 4: {
                             System.out.println("Enter new age:");
+                            while (!scanner.hasNextInt()) {
+                                System.out.println("Indicate age in numbers!");
+                                scanner.next();
+                            }
                             contact.setAge(scanner.nextInt());
                             contact.setUpdateTime(LocalDateTime.now());
+                            break;
                         }
                         case 5: {
                             System.out.println("Enter new number phone:");
                             contact.setPhoneNumber(scanner.next());
                             contact.setUpdateTime(LocalDateTime.now());
+                            break;
                         }
                         case 6: {
                             System.out.println("Is contact married(y/n)?");
-                            contact.setMarried(scanner.nextBoolean());
+                            contact.setMarried(scanner.next().equalsIgnoreCase("y"));
                             contact.setUpdateTime(LocalDateTime.now());
+                            break;
                         }
                         case 0: {
                             System.out.println("Update is done.");
@@ -95,14 +108,12 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public boolean removeContact(Scanner scanner) {
         for (; ; ) {
-            System.out.println("Enter number ID for delete(1-" + ContactDaoImpl.getNumberOfContacts() + "):");
+            System.out.println("Enter ID for delete:");
             if (scanner.hasNextInt()) {
                 int id = scanner.nextInt();
-                if (id > 0 && id <= ContactDaoImpl.getNumberOfContacts()) {
-                    return contactDao.removeContact(id - 1);
-                }
+                return contactDao.removeContact(id);
             } else {
-                System.out.println("You enter wrong number");
+                System.out.println("You entered wrong ID number.");
                 scanner.next();
             }
         }
@@ -117,14 +128,12 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Contact findById(Scanner scanner) {
         for (; ; ) {
-            System.out.println("Enter id of contact (1-" + ContactDaoImpl.getNumberOfContacts() + ");");
+            System.out.println("Enter ID of contact:");
             if (scanner.hasNextInt()) {
                 int id = scanner.nextInt();
-                if (id > 0 && id <= ContactDaoImpl.getNumberOfContacts()) {
-                    return contactDao.findById(id - 1);
-                }
+                return contactDao.findById(id);
             } else {
-                System.out.println("You enter wrong number");
+                System.out.println("You entered wrong ID number.");
                 scanner.next();
             }
         }
