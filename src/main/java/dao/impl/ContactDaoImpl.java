@@ -4,6 +4,7 @@ import constants.ResponseCode;
 import dao.ContactDao;
 import entity.Contact;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class ContactDaoImpl implements ContactDao {
@@ -12,6 +13,7 @@ public class ContactDaoImpl implements ContactDao {
     private static int numberOfContacts = 10;
 
     private static Contact[] contacts = new Contact[numberOfContacts];
+    private static ArrayList<Contact> contactArrayList = new ArrayList<>();
 
     public static int getNumberOfContacts() {
         return numberOfContacts;
