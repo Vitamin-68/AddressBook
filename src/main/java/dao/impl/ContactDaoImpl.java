@@ -10,28 +10,18 @@ import java.util.Objects;
 public class ContactDaoImpl implements ContactDao {
 
     private static int generator = 0;
-    private static int numberOfContacts = 10;
 
-    private static Contact[] contacts = new Contact[numberOfContacts];
     private static ArrayList<Contact> contactArrayList = new ArrayList<>();
-
-    public static int getNumberOfContacts() {
-        return numberOfContacts;
-    }
-
-    public static void setNumberOfContacts(int numberOfContacts) {
-        ContactDaoImpl.numberOfContacts = numberOfContacts;
-    }
 
     @Override
     public Contact createContact(Contact newContact) {
         if (isStoreHasEmptyCells()) {
             int index = 0;
-            for (Contact contact : contacts) {
+            for (Contact contact : contactArrayList) {
                 if (Objects.isNull(contact)) {
                     newContact.setId(++generator);
                     contact = newContact;
-                    contacts[index] = contact;
+                    contactArrayList[index] = contact;
                     return contact;
                 }
                 index++;
