@@ -3,14 +3,14 @@ package dao.impl;
 import dao.ContactDao;
 import entity.Contact;
 
-import java.util.ArrayList;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class ContactDaoImpl implements ContactDao {
 
     private static int generator = 0;
 
-    private static ArrayList<Contact> contactArrayList = new ArrayList<>();
+    private static List<Contact> contactArrayList = new ArrayList<>();
 
     @Override
     public Contact createContact(Contact newContact) {
@@ -20,15 +20,15 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     @Override
-    public Contact findById(int id) {
+    public int findById(int id) {
         for (Contact contact : contactArrayList) {
             if (Objects.equals(contact.getId(), id)) {
                 showOneContact(contact);
-                return contact;
+                return contactArrayList.indexOf(contact);
             }
         }
         System.out.println("Contact with ID = " + id + " not found.");
-        return new Contact();
+        return -1;
     }
 
     @Override
@@ -43,14 +43,20 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     @Override
-    public boolean removeContact(int id) {
-        for (Contact contact : contactArrayList) {
-            if (contact != null && Objects.equals(contact.getId(), id)) {
+    public boolean removeContact(int id, Scanner scanner) {
+        int index = findById(id);
+        if (index > 0) {
+            System.out.println("Do you really want to delete this contact?");
+            if (scanner.next().equalsIgnoreCase("y")) {
+                contactArrayList.remove(index);
                 System.out.println("Contact with ID = " + id + " was deleted successfully");
                 return true;
+            } else {
+                System.out.println("Contact has not been deleted");
+                return false;
             }
         }
-        System.out.println("Contact with ID = " + id + " not found.");
+//        System.out.println("Contact with ID = " + id + " not found.");
         return false;
     }
 
@@ -58,6 +64,38 @@ public class ContactDaoImpl implements ContactDao {
     public void showAllContacts() {
         for (Contact contact : contactArrayList) {
             System.out.println(contact);
+        }
+    }
+
+    @Override
+    public void saveUpdatedField(Contact contact, int field, int index) {
+        Contact contactUpdate = contactArrayList.get(index);
+        switch (field) {
+            case 2: {
+                contactUpdate.setName(contact.getName());
+                contactUpdate.setUpdateTime(LocalDateTime.now());
+                break;
+            }
+            case 3: {
+                contactUpdate.setLastName(contact.getLastName());
+                contactUpdate.setUpdateTime(LocalDateTime.now());
+                break;
+            }
+            case 4: {
+                contactUpdate.setAge(contact.getAge());
+                contactUpdate.setUpdateTime(LocalDateTime.now());
+                break;
+            }
+            case 5: {
+                contactUpdate.setPhoneNumber(contact.getPhoneNumber());
+                contactUpdate.setUpdateTime(LocalDateTime.now());
+                break;
+            }
+            case 6: {
+                contactUpdate.setMarried(contact.isMarried());
+                contactUpdate.setUpdateTime(LocalDateTime.now());
+                break;
+            }
         }
     }
 

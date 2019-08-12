@@ -42,67 +42,71 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Contact updateContact(Scanner scanner) {
-        Contact contact = this.findById(scanner);
-        boolean exit = true;
-        do {
-            System.out.println("Enter number of field for update (2-6)\n or 0 for Exit:");
-            try {
-                if (scanner.hasNextInt()) {
-                    int numberOfField = scanner.nextInt();
-                    switch (numberOfField) {
-                        case 2: {
-                            System.out.println("Enter new name:");
-                            contact.setName(scanner.next());
-                            contact.setUpdateTime(LocalDateTime.now());
-                            break;
-                        }
-                        case 3: {
-                            System.out.println("Enter new last name:");
-                            contact.setLastName(scanner.next());
-                            contact.setUpdateTime(LocalDateTime.now());
-                            break;
-                        }
-                        case 4: {
-                            System.out.println("Enter new age:");
-                            while (!scanner.hasNextInt()) {
-                                System.out.println("Indicate age in numbers!");
-                                scanner.next();
+        Contact contact = new Contact();
+        int index = findById(scanner);
+        if (index > 0) {
+            boolean exit = true;
+            do {
+                System.out.println("Enter number of field for update (2-6)\nor 0 for Exit:");
+                try {
+                    if (scanner.hasNextInt()) {
+                        int numberOfField = scanner.nextInt();
+                        switch (numberOfField) {
+                            case 2: {
+                                System.out.println("Enter new name:");
+                                contact.setName(scanner.next());
+                                contactDao.saveUpdatedField(contact, numberOfField, index);
+                                break;
                             }
-                            contact.setAge(scanner.nextInt());
-                            contact.setUpdateTime(LocalDateTime.now());
-                            break;
+                            case 3: {
+                                System.out.println("Enter new last name:");
+                                contact.setLastName(scanner.next());
+                                contactDao.saveUpdatedField(contact, numberOfField, index);
+                                break;
+                            }
+                            case 4: {
+                                System.out.println("Enter new age:");
+                                while (!scanner.hasNextInt()) {
+                                    System.out.println("Indicate age in numbers!");
+                                    scanner.next();
+                                }
+                                contact.setAge(scanner.nextInt());
+                                contactDao.saveUpdatedField(contact, numberOfField, index);
+                                break;
+                            }
+                            case 5: {
+                                System.out.println("Enter new number phone:");
+                                contact.setPhoneNumber(scanner.next());
+                                contactDao.saveUpdatedField(contact, numberOfField, index);
+                                break;
+                            }
+                            case 6: {
+                                System.out.println("Is contact married(y/n)?");
+                                contact.setMarried(scanner.next().equalsIgnoreCase("y"));
+                                contactDao.saveUpdatedField(contact, numberOfField, index);
+                                break;
+                            }
+                            case 0: {
+                                System.out.println("Update is done.");
+                                exit = false;
+                                break;
+                            }
+                            default: {
+                                throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
+                                        "You enter wrong number of operation");
+                            }
                         }
-                        case 5: {
-                            System.out.println("Enter new number phone:");
-                            contact.setPhoneNumber(scanner.next());
-                            contact.setUpdateTime(LocalDateTime.now());
-                            break;
-                        }
-                        case 6: {
-                            System.out.println("Is contact married(y/n)?");
-                            contact.setMarried(scanner.next().equalsIgnoreCase("y"));
-                            contact.setUpdateTime(LocalDateTime.now());
-                            break;
-                        }
-                        case 0: {
-                            System.out.println("Update is done.");
-                            exit = false;
-                            break;
-                        }
-                        default: {
-                            throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
-                                    "You enter wrong number of operation");
-                        }
+                    } else {
+                        System.out.println("You entered wrong number");
+                        scanner.next();
                     }
-                } else {
-                    System.out.println("You entered wrong number");
-                    scanner.next();
+                } catch (MyAddressBookException e) {
+                    System.out.println(e.getMessage());
                 }
-            } catch (MyAddressBookException e) {
-                System.out.println(e.getMessage());
-            }
-        } while (exit);
-        return contactDao.updateContact(contact);
+            } while (exit);
+            return contactDao.updateContact(contact);
+        }
+        return contact;
     }
 
     @Override
@@ -111,7 +115,7 @@ public class ContactServiceImpl implements ContactService {
             System.out.println("Enter ID for delete:");
             if (scanner.hasNextInt()) {
                 int id = scanner.nextInt();
-                return contactDao.removeContact(id);
+                return contactDao.removeContact(id, scanner);
             } else {
                 System.out.println("You entered wrong ID number.");
                 scanner.next();
@@ -126,7 +130,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact findById(Scanner scanner) {
+    public int findById(Scanner scanner) {
         for (; ; ) {
             System.out.println("Enter ID of contact:");
             if (scanner.hasNextInt()) {

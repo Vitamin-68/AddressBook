@@ -2,7 +2,7 @@ package dao;
 
 import entity.Contact;
 
-import java.sql.Connection;
+import java.util.Scanner;
 
 public interface ContactDao {
 
@@ -10,9 +10,11 @@ public interface ContactDao {
 
     Contact updateContact(Contact updatedContact);
 
-    boolean removeContact(int id);
+    boolean removeContact(int id, Scanner scanner);
 
     void showAllContacts();
 
-    Contact findById(int id);
+    int findById(int id);
+
+    void saveUpdatedField(Contact contact, int field, int index);
 }
