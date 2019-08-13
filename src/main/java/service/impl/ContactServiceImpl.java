@@ -44,7 +44,7 @@ public class ContactServiceImpl implements ContactService {
     public Contact updateContact(Scanner scanner) {
         Contact contact = new Contact();
         int index = findById(scanner);
-        if (index > 0) {
+        if (index >= 0) {
             boolean exit = true;
             do {
                 System.out.println("Enter number of field for update (2-6)\nor 0 for Exit:");
