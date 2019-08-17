@@ -1,6 +1,7 @@
 package constants;
 
 public enum ResponseCode {
+
     WRONG_DATA_TYPE;
 
     private int code;

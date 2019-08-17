@@ -8,7 +8,7 @@ public interface ContactDao {
 
     Contact createContact(Contact newContact);
 
-    Contact updateContact(Contact updatedContact);
+    Contact updateContact(Contact updatedContact, int index);
 
     boolean removeContact(int id, Scanner scanner);
 
@@ -16,5 +16,5 @@ public interface ContactDao {
 
     int findById(int id);
 
-    void saveUpdatedField(Contact contact, int field, int index);
+    void cloneContact(Contact contact, int index);
 }

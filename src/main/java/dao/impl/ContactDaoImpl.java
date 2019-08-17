@@ -16,6 +16,8 @@ public class ContactDaoImpl implements ContactDao {
     public Contact createContact(Contact newContact) {
         newContact.setId(++generator);
         contactArrayList.add(newContact);
+        System.out.println("New contact added successfully:");
+        showOneContact(newContact);
         return newContact;
     }
 
@@ -32,14 +34,26 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     @Override
-    public Contact updateContact(Contact updatedContact) {
-        for (Contact contact : contactArrayList) {
-            if (Objects.equals(contact.getId(), updatedContact.getId())) {
-                contact = updatedContact;
-                return contact;
-            }
-        }
+    public Contact updateContact(Contact updatedContact, int index) {
+        System.out.println((updatedContact));
+//        contactArrayList. ;
+//        for (Contact contact : contactArrayList) {
+//            if (Objects.equals(contact.getId(), updatedContact.getId())) {
+//                contact = updatedContact;
+//                return contact;
+//            }
+//        }
         return updatedContact;
+    }
+
+    @Override
+    public void cloneContact(Contact contact, int index)  {
+        contact.setId(contactArrayList.get(index).getId());
+        contact.setName(contactArrayList.get(index).getName());
+        contact.setLastName(contactArrayList.get(index).getLastName());
+        contact.setAge(contactArrayList.get(index).getAge());
+        contact.setPhoneNumber(contactArrayList.get(index).getPhoneNumber());
+        contact.setMarried(contactArrayList.get(index).isMarried());
     }
 
     @Override
@@ -49,14 +63,13 @@ public class ContactDaoImpl implements ContactDao {
             System.out.println("Do you really want to delete this contact?");
             if (scanner.next().equalsIgnoreCase("y")) {
                 contactArrayList.remove(index);
-                System.out.println("Contact with ID = " + id + " was deleted successfully");
+                System.out.println("Contact with ID = " + id + " was deleted successfully.\n");
                 return true;
             } else {
-                System.out.println("Contact has not been deleted");
+                System.out.println("Contact has not been deleted.\n");
                 return false;
             }
         }
-//        System.out.println("Contact with ID = " + id + " not found.");
         return false;
     }
 
@@ -65,38 +78,7 @@ public class ContactDaoImpl implements ContactDao {
         for (Contact contact : contactArrayList) {
             System.out.println(contact);
         }
-    }
-
-    @Override
-    public void saveUpdatedField(Contact contact, int field, int index) {
-        Contact contactUpdate = contactArrayList.get(index);
-        switch (field) {
-            case 2: {
-                contactUpdate.setName(contact.getName());
-                contactUpdate.setUpdateTime(LocalDateTime.now());
-                break;
-            }
-            case 3: {
-                contactUpdate.setLastName(contact.getLastName());
-                contactUpdate.setUpdateTime(LocalDateTime.now());
-                break;
-            }
-            case 4: {
-                contactUpdate.setAge(contact.getAge());
-                contactUpdate.setUpdateTime(LocalDateTime.now());
-                break;
-            }
-            case 5: {
-                contactUpdate.setPhoneNumber(contact.getPhoneNumber());
-                contactUpdate.setUpdateTime(LocalDateTime.now());
-                break;
-            }
-            case 6: {
-                contactUpdate.setMarried(contact.isMarried());
-                contactUpdate.setUpdateTime(LocalDateTime.now());
-                break;
-            }
-        }
+        System.out.println("\n\n");
     }
 
     private void showOneContact(Contact contact) {
@@ -107,8 +89,7 @@ public class ContactDaoImpl implements ContactDao {
         System.out.println("5. Phone number: " + contact.getPhoneNumber());
         System.out.println("6. Martial status: : " + (contact.isMarried() ? "Married" : "No married"));
         System.out.println("7. Data of create: " + contact.getCreateDate());
-        System.out.println("8. Data of update: " + contact.getUpdateTime());
-        return;
+        System.out.println("8. Data of update: " + contact.getUpdateTime() + "\n\n");
     }
 
 }

@@ -12,6 +12,14 @@ import java.util.Scanner;
 
 public class ContactServiceImpl implements ContactService {
 
+    private final int SELECT_NAME_CONTACT = 2;
+    private final int SELECT_LAST_NAME_CONTACT = 3;
+    private final int SELECT_AGE_CONTACT = 4;
+    private final int SELECT_PHONE_CONTACT = 5;
+    private final int SELECT_STATUS_CONTACT = 6;
+    private final int EXIT = 0;
+
+
     private static final ContactDao contactDao = new ContactDaoImpl();
 
     public ContactServiceImpl(ContactDaoImpl contactDao) {
@@ -21,17 +29,17 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Contact createContact(Scanner scanner) {
         Contact contact = new Contact();
-        System.out.println("Enter name of contact:");
+        System.out.println("Enter name of new contact:");
         contact.setName(scanner.next());
-        System.out.println("Enter last name of contact:");
+        System.out.println("Enter last name of new contact:");
         contact.setLastName(scanner.next());
-        System.out.println("Enter age of contact");
+        System.out.println("Enter age of new contact");
         while (!scanner.hasNextInt()) {
             System.out.println("Indicate age in numbers!");
             scanner.next();
         }
         contact.setAge(scanner.nextInt());
-        System.out.println("Enter phone number of contact");
+        System.out.println("Enter phone number of new contact");
         contact.setPhoneNumber(scanner.next());
         System.out.println("Is contact married(y/n)?");
         contact.setMarried(scanner.next().equalsIgnoreCase("y"));
@@ -44,50 +52,63 @@ public class ContactServiceImpl implements ContactService {
     public Contact updateContact(Scanner scanner) {
         Contact contact = new Contact();
         int index = findById(scanner);
+        System.out.println(contact);
+        contactDao.cloneContact(contact, index);
+        System.out.println(contact);
         if (index >= 0) {
-            boolean exit = true;
+            boolean exit = true, flagEditContact = false;
             do {
                 System.out.println("Enter number of field for update (2-6)\nor 0 for Exit:");
                 try {
                     if (scanner.hasNextInt()) {
                         int numberOfField = scanner.nextInt();
                         switch (numberOfField) {
-                            case 2: {
+                            case SELECT_NAME_CONTACT: {
                                 System.out.println("Enter new name:");
                                 contact.setName(scanner.next());
-                                contactDao.saveUpdatedField(contact, numberOfField, index);
+//                                contactDao.saveUpdatedField(contact, numberOfField, index);
+                                flagEditContact = true;
                                 break;
                             }
-                            case 3: {
+                            case SELECT_LAST_NAME_CONTACT: {
                                 System.out.println("Enter new last name:");
                                 contact.setLastName(scanner.next());
-                                contactDao.saveUpdatedField(contact, numberOfField, index);
+//                                contactDao.saveUpdatedField(contact, numberOfField, index);
+                                flagEditContact = true;
                                 break;
                             }
-                            case 4: {
+                            case SELECT_AGE_CONTACT: {
                                 System.out.println("Enter new age:");
                                 while (!scanner.hasNextInt()) {
                                     System.out.println("Indicate age in numbers!");
                                     scanner.next();
                                 }
                                 contact.setAge(scanner.nextInt());
-                                contactDao.saveUpdatedField(contact, numberOfField, index);
+//                                contactDao.saveUpdatedField(contact, numberOfField, index);
+                                flagEditContact = true;
                                 break;
                             }
-                            case 5: {
+                            case SELECT_PHONE_CONTACT: {
                                 System.out.println("Enter new number phone:");
                                 contact.setPhoneNumber(scanner.next());
-                                contactDao.saveUpdatedField(contact, numberOfField, index);
+//                                contactDao.saveUpdatedField(contact, numberOfField, index);
+                                flagEditContact = true;
                                 break;
                             }
-                            case 6: {
+                            case SELECT_STATUS_CONTACT: {
                                 System.out.println("Is contact married(y/n)?");
                                 contact.setMarried(scanner.next().equalsIgnoreCase("y"));
-                                contactDao.saveUpdatedField(contact, numberOfField, index);
+//                                contactDao.saveUpdatedField(contact, numberOfField, index);
+                                flagEditContact = true;
                                 break;
                             }
-                            case 0: {
-                                System.out.println("Update is done.");
+                            case EXIT: {
+                                if (flagEditContact) {
+                                    contactDao.updateContact(contact, index);
+                                    System.out.println("Update is done.");
+                                } else {
+                                    System.out.println("Nothing selected fo  update.");
+                                }
                                 exit = false;
                                 break;
                             }
@@ -104,7 +125,7 @@ public class ContactServiceImpl implements ContactService {
                     System.out.println(e.getMessage());
                 }
             } while (exit);
-            return contactDao.updateContact(contact);
+            return contactDao.updateContact(contact,index);
         }
         return contact;
     }

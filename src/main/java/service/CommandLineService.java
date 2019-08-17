@@ -7,6 +7,13 @@ import java.util.Scanner;
 
 public interface CommandLineService {
 
+    int ADD_CONTACT = 1;
+    int UPDATE_CONTACT = 2;
+    int DELETE_CONTACT = 3;
+    int SHOW_ALL_CONTACT = 4;
+    int SHOW_CONTACT_BY_ID = 5;
+    int EXIT = 0;
+
     static void run(Scanner scanner, ContactService service) {
         boolean exit = true;
         do {
@@ -15,27 +22,27 @@ public interface CommandLineService {
             try {
                 if (scanner.hasNextInt()) {
                     switch (scanner.nextInt()) {
-                        case 1: {
+                        case ADD_CONTACT: {
                             service.createContact(scanner);
                             break;
                         }
-                        case 2: {
+                        case UPDATE_CONTACT: {
                             service.updateContact(scanner);
                             break;
                         }
-                        case 3: {
+                        case DELETE_CONTACT: {
                             service.removeContact(scanner);
                             break;
                         }
-                        case 4: {
+                        case SHOW_ALL_CONTACT: {
                             service.showAllContacts();
                             break;
                         }
-                        case 5: {
+                        case SHOW_CONTACT_BY_ID: {
                             service.findById(scanner);
                             break;
                         }
-                        case 0: {
+                        case EXIT: {
                             System.out.println("Thank you that use our app. Good bye.");
                             exit = false;
                             break;
