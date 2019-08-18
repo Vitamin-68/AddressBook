@@ -10,67 +10,69 @@ public class ContactDaoImpl implements ContactDao {
 
     private static int generator = 0;
 
-    private static Set<Contact> contactArrayList = new TreeSet<>();
+    private static Set<Contact> contactTreeSet = new TreeSet<>();
 
     @Override
     public Contact createContact(Contact newContact) {
         newContact.setId(++generator);
-        contactArrayList.add(newContact);
+        contactTreeSet.add(newContact);
         System.out.println("New contact added successfully:");
         showOneContact(newContact);
         return newContact;
     }
 
     @Override
-    public int findById(int id) {
-        for (Contact contact : contactArrayList) {
+    public Contact findById(int id) {
+        for (Contact contact : contactTreeSet) {
             if (Objects.equals(contact.getId(), id)) {
                 showOneContact(contact);
-                return contactArrayList.indexOf(contact);
+                return contact;
             }
         }
         System.out.println("Contact with ID = " + id + " not found.");
-        return -1;
+        return null;
     }
 
     @Override
     public Contact updateContact(Contact updatedContact, int index) {
         updatedContact.setUpdateTime(LocalDateTime.now());
-        contactArrayList.set(index, updatedContact);
+        contactTreeSet.add(index, updatedContact);
         return updatedContact;
     }
 
     @Override
     public void cloneContact(Contact contact, int index)  {
-        contact.setId(contactArrayList.get(index).getId());
-        contact.setName(contactArrayList.get(index).getName());
-        contact.setLastName(contactArrayList.get(index).getLastName());
-        contact.setAge(contactArrayList.get(index).getAge());
-        contact.setPhoneNumber(contactArrayList.get(index).getPhoneNumber());
-        contact.setMarried(contactArrayList.get(index).isMarried());
-        contact.setCreateDate(contactArrayList.get(index).getCreateDate());
+        contact.setId(contactTreeSet.get(index).getId());
+        contact.setName(contactTreeSet.get(index).getName());
+        contact.setLastName(contactTreeSet.get(index).getLastName());
+        contact.setAge(contactTreeSet.get(index).getAge());
+        contact.setPhoneNumber(contactTreeSet.get(index).getPhoneNumber());
+        contact.setMarried(contactTreeSet.get(index).isMarried());
+        contact.setCreateDate(contactTreeSet.get(index).getCreateDate());
     }
 
     @Override
     public boolean removeContact(int id, Scanner scanner) {
-        int index = findById(id);
-        if (index > 0) {
+        Contact contact = findById(id);
+        if (contact != null) {
             System.out.println("Do you really want to delete this contact?");
             if (scanner.next().equalsIgnoreCase("y")) {
-                contactArrayList.remove(index);
+                contactTreeSet.remove(contact);
                 System.out.println("Contact with ID = " + id + " was deleted successfully.\n");
                 return true;
             } else {
                 System.out.println("Contact has not been deleted.\n");
                 return false;
             }
+        } else {
+            System.out.println("Contact don't exist and can't be deleted.\n");
+            return false;
         }
-        return false;
     }
 
     @Override
     public void showAllContacts() {
-        for (Contact contact : contactArrayList) {
+        for (Contact contact : contactTreeSet) {
             System.out.println(contact);
         }
         System.out.println("\n\n");

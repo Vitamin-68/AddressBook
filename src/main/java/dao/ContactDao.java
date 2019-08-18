@@ -14,7 +14,7 @@ public interface ContactDao {
 
     void showAllContacts();
 
-    int findById(int id);
+    Contact findById(int id);
 
     void cloneContact(Contact contact, int index);
 }
