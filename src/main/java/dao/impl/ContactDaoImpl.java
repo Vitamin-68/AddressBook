@@ -35,14 +35,8 @@ public class ContactDaoImpl implements ContactDao {
 
     @Override
     public Contact updateContact(Contact updatedContact, int index) {
-        System.out.println((updatedContact));
-//        contactArrayList. ;
-//        for (Contact contact : contactArrayList) {
-//            if (Objects.equals(contact.getId(), updatedContact.getId())) {
-//                contact = updatedContact;
-//                return contact;
-//            }
-//        }
+        updatedContact.setUpdateTime(LocalDateTime.now());
+        contactArrayList.set(index, updatedContact);
         return updatedContact;
     }
 
@@ -54,6 +48,7 @@ public class ContactDaoImpl implements ContactDao {
         contact.setAge(contactArrayList.get(index).getAge());
         contact.setPhoneNumber(contactArrayList.get(index).getPhoneNumber());
         contact.setMarried(contactArrayList.get(index).isMarried());
+        contact.setCreateDate(contactArrayList.get(index).getCreateDate());
     }
 
     @Override

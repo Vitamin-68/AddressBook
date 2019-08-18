@@ -52,10 +52,8 @@ public class ContactServiceImpl implements ContactService {
     public Contact updateContact(Scanner scanner) {
         Contact contact = new Contact();
         int index = findById(scanner);
-        System.out.println(contact);
-        contactDao.cloneContact(contact, index);
-        System.out.println(contact);
         if (index >= 0) {
+            contactDao.cloneContact(contact, index);
             boolean exit = true, flagEditContact = false;
             do {
                 System.out.println("Enter number of field for update (2-6)\nor 0 for Exit:");
@@ -66,14 +64,12 @@ public class ContactServiceImpl implements ContactService {
                             case SELECT_NAME_CONTACT: {
                                 System.out.println("Enter new name:");
                                 contact.setName(scanner.next());
-//                                contactDao.saveUpdatedField(contact, numberOfField, index);
                                 flagEditContact = true;
                                 break;
                             }
                             case SELECT_LAST_NAME_CONTACT: {
                                 System.out.println("Enter new last name:");
                                 contact.setLastName(scanner.next());
-//                                contactDao.saveUpdatedField(contact, numberOfField, index);
                                 flagEditContact = true;
                                 break;
                             }
@@ -84,30 +80,27 @@ public class ContactServiceImpl implements ContactService {
                                     scanner.next();
                                 }
                                 contact.setAge(scanner.nextInt());
-//                                contactDao.saveUpdatedField(contact, numberOfField, index);
                                 flagEditContact = true;
                                 break;
                             }
                             case SELECT_PHONE_CONTACT: {
                                 System.out.println("Enter new number phone:");
                                 contact.setPhoneNumber(scanner.next());
-//                                contactDao.saveUpdatedField(contact, numberOfField, index);
                                 flagEditContact = true;
                                 break;
                             }
                             case SELECT_STATUS_CONTACT: {
                                 System.out.println("Is contact married(y/n)?");
                                 contact.setMarried(scanner.next().equalsIgnoreCase("y"));
-//                                contactDao.saveUpdatedField(contact, numberOfField, index);
                                 flagEditContact = true;
                                 break;
                             }
                             case EXIT: {
                                 if (flagEditContact) {
                                     contactDao.updateContact(contact, index);
-                                    System.out.println("Update is done.");
+                                    System.out.println("Update is done.\n\n");
                                 } else {
-                                    System.out.println("Nothing selected fo  update.");
+                                    System.out.println("Nothing selected fo update.\n\n");
                                 }
                                 exit = false;
                                 break;
@@ -125,14 +118,14 @@ public class ContactServiceImpl implements ContactService {
                     System.out.println(e.getMessage());
                 }
             } while (exit);
-            return contactDao.updateContact(contact,index);
+//            return contactDao.updateContact(contact,index);
         }
         return contact;
     }
 
     @Override
     public boolean removeContact(Scanner scanner) {
-        for (; ; ) {
+        while (true) {
             System.out.println("Enter ID for delete:");
             if (scanner.hasNextInt()) {
                 int id = scanner.nextInt();
