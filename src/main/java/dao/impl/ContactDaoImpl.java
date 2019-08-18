@@ -10,7 +10,7 @@ public class ContactDaoImpl implements ContactDao {
 
     private static int generator = 0;
 
-    private static List<Contact> contactArrayList = new ArrayList<>();
+    private static Set<Contact> contactArrayList = new TreeSet<>();
 
     @Override
     public Contact createContact(Contact newContact) {
