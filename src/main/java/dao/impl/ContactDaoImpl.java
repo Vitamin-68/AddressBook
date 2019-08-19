@@ -6,12 +6,13 @@ import entity.ContactIdComparator;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ContactDaoImpl implements ContactDao {
 
     private static int generator = 0;
 
-    private static Set<Contact> contactTreeSet = new TreeSet<>(new ContactIdComparator());
+    private static Set<Contact> contactTreeSet = new TreeSet<>(Comparator.comparing(Contact::getId));
 
     @Override
     public Contact createContact(Contact newContact) {
@@ -66,6 +67,10 @@ public class ContactDaoImpl implements ContactDao {
             System.out.println(contact);
         }
         System.out.println("\n\n");
+        contactTreeSet.stream()
+                .sorted(Comparator.comparing(Contact::getName))
+                .collect(Collectors
+                        .toList()).forEach(System.out::println);
     }
 
     private void showOneContact(Contact contact) {
