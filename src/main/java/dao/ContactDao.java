@@ -12,7 +12,7 @@ public interface ContactDao {
 
     boolean removeContact(int id, Scanner scanner);
 
-    void showAllContacts();
+    void showAllContacts(int number);
 
     Contact findById(int id);
 
