@@ -136,4 +136,5 @@ public class Contact {
                 ", updateTime=" + updateTime +
                 '}';
     }
+
 }

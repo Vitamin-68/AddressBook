@@ -14,5 +14,5 @@ public interface ContactService {
 
     void showAllContacts();
 
-    int findById(Scanner scanner);
+    Contact findById(Scanner scanner);
 }

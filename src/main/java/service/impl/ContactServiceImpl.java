@@ -29,7 +29,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Contact createContact(Scanner scanner) {
         Contact contact = new Contact();
-        System.out.println("Enter name of new contact:");
+        System.out.println("\n\nEnter name of new contact:");
         contact.setName(scanner.next());
         System.out.println("Enter last name of new contact:");
         contact.setLastName(scanner.next());
@@ -51,10 +51,24 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Contact updateContact(Scanner scanner) {
         Contact contact = new Contact();
-        int index = findById(scanner);
-        if (index >= 0) {
-            contactDao.cloneContact(contact, index);
-            boolean exit = true, flagEditContact = false;
+        while (true) {
+            System.out.println("Enter ID for update:");
+            if (scanner.hasNextInt()) {
+                int id = scanner.nextInt();
+                if (contactDao.cloneContact(contactDao.findById(id), contact)) {
+                    break;
+                } else {
+                    System.out.println("Update failed");
+                    return contact;
+                }
+            } else {
+                System.out.println("You entered wrong ID number.");
+                scanner.next();
+            }
+        }
+        System.out.println("before update - " +contact);
+
+        boolean exit = true, flagEditContact = false;
             do {
                 System.out.println("Enter number of field for update (2-6)\nor 0 for Exit:");
                 try {
@@ -97,7 +111,7 @@ public class ContactServiceImpl implements ContactService {
                             }
                             case EXIT: {
                                 if (flagEditContact) {
-                                    contactDao.updateContact(contact, index);
+                                    contactDao.updateContact(contact);
                                     System.out.println("Update is done.\n\n");
                                 } else {
                                     System.out.println("Nothing selected fo update.\n\n");
@@ -118,8 +132,6 @@ public class ContactServiceImpl implements ContactService {
                     System.out.println(e.getMessage());
                 }
             } while (exit);
-//            return contactDao.updateContact(contact,index);
-        }
         return contact;
     }
 
@@ -144,8 +156,8 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public int findById(Scanner scanner) {
-        for (; ; ) {
+    public Contact findById(Scanner scanner) {
+        while (true) {
             System.out.println("Enter ID of contact:");
             if (scanner.hasNextInt()) {
                 int id = scanner.nextInt();

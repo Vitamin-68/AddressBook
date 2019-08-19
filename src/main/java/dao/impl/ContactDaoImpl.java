@@ -2,6 +2,7 @@ package dao.impl;
 
 import dao.ContactDao;
 import entity.Contact;
+import entity.ContactIdComparator;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -10,7 +11,7 @@ public class ContactDaoImpl implements ContactDao {
 
     private static int generator = 0;
 
-    private static Set<Contact> contactTreeSet = new TreeSet<>();
+    private static Set<Contact> contactTreeSet = new TreeSet<>(new ContactIdComparator());
 
     @Override
     public Contact createContact(Contact newContact) {
@@ -34,21 +35,10 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     @Override
-    public Contact updateContact(Contact updatedContact, int index) {
+    public Contact updateContact(Contact updatedContact) {
         updatedContact.setUpdateTime(LocalDateTime.now());
-        contactTreeSet.add(index, updatedContact);
+        cloneContact(updatedContact, findById(updatedContact.getId()));
         return updatedContact;
-    }
-
-    @Override
-    public void cloneContact(Contact contact, int index)  {
-        contact.setId(contactTreeSet.get(index).getId());
-        contact.setName(contactTreeSet.get(index).getName());
-        contact.setLastName(contactTreeSet.get(index).getLastName());
-        contact.setAge(contactTreeSet.get(index).getAge());
-        contact.setPhoneNumber(contactTreeSet.get(index).getPhoneNumber());
-        contact.setMarried(contactTreeSet.get(index).isMarried());
-        contact.setCreateDate(contactTreeSet.get(index).getCreateDate());
     }
 
     @Override
@@ -87,6 +77,22 @@ public class ContactDaoImpl implements ContactDao {
         System.out.println("6. Martial status: : " + (contact.isMarried() ? "Married" : "No married"));
         System.out.println("7. Data of create: " + contact.getCreateDate());
         System.out.println("8. Data of update: " + contact.getUpdateTime() + "\n\n");
+    }
+
+    @Override
+    public boolean cloneContact(Contact contactCarrier, Contact contactTarget) {
+        if (contactCarrier != null && contactTarget != null){
+            contactTarget.setId(contactCarrier.getId());
+            contactTarget.setName(contactCarrier.getName());
+            contactTarget.setLastName(contactCarrier.getLastName());
+            contactTarget.setAge(contactCarrier.getAge());
+            contactTarget.setPhoneNumber(contactCarrier.getPhoneNumber());
+            contactTarget.setMarried(contactCarrier.isMarried());
+            contactTarget.setCreateDate(contactCarrier.getCreateDate());
+            contactTarget.setUpdateTime(contactCarrier.getUpdateTime());
+            return true;
+        } else
+            return false;
     }
 
 }
