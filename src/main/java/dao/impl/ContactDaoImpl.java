@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static exceptions.MyAddressBookException.NOT_FOUND_MESSAGE;
+
 public class ContactDaoImpl implements ContactDao {
 
     private static int generator = 0;
@@ -38,14 +40,21 @@ public class ContactDaoImpl implements ContactDao {
 //    }
 
     @Override
-    public Contact findById(int id) {
+    public Contact findById(int id) throws MyAddressBookException {
 
         return contactTreeSet
                 .stream()
                 .filter(contact -> contact.getId() == id)
                 .findFirst()
                 .orElseThrow(()-> new MyAddressBookException(ResponseCode.NOT_FOUND, NOT_FOUND_MESSAGE));
+    }
 
+    public Contact findByName(String name) throws MyAddressBookException {
+        return  contactTreeSet
+                .stream()
+                .filter(contact -> contact.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND, NOT_FOUND_MESSAGE));
     }
 
 //    @Override
@@ -57,15 +66,15 @@ public class ContactDaoImpl implements ContactDao {
 
     @Override
     public Contact updateContact(Contact contact) {
-       contactTreeSet = contactTreeSet
-               .stream()
-               .peek(updatedContact -> {
-                   if (Object.equals(updatedContact.getId(),  contact.getId())){
-                       updatedContact = contact;
-                   }
-               })
-               .collect(Collectors.toCollection(TreeSet::new));
-       return contact;
+        contactTreeSet = contactTreeSet
+                .stream()
+                .peek(updatedContact -> {
+                    if (Objects.equals(updatedContact.getId(), contact.getId())) {
+                        updatedContact = contact;
+                    }
+                })
+                .collect(Collectors.toCollection(TreeSet::new));
+        return contact;
     }
 
 
@@ -87,6 +96,8 @@ public class ContactDaoImpl implements ContactDao {
 //            return false;
 //        }
 //    }
+
+
 
     @Override
     public boolean removeContact(int id, Scanner scanner) {
@@ -167,21 +178,22 @@ public class ContactDaoImpl implements ContactDao {
 
     private void searchSameContact(Contact contact) throws MyAddressBookException {
         Optional<Contact> sameContactOpt = contactTreeSet.stream()
-                .filter(sameContact ->sameContact
+                .filter(sameContact -> sameContact
                         .getPhoneNumber()
                         .equals(contact.getPhoneNumber()))
                 .findFirst();
-        if(sameContactOpt.isPresent()) {
-            throw new MyAddressBookException(ResponseCode.OBJECT_EXIST, "Same contact is exist id" + sameContactOpt.get().getId());
+        if (sameContactOpt.isPresent()) {
+            throw new MyAddressBookException(ResponseCode.OBJECT_EXIST,
+                    "Same contact is exist with id" + sameContactOpt.get().getId());
         }
     }
 
-    private void searchSameContact2(Contact contact) throws MyAddressBookException {
+    private void searchSameContact2(Contact contact) {
         contactTreeSet.stream()
-                .filter(sameContact ->sameContact
-                        .getPhoneNumber()
-                        .equals(contact.getPhoneNumber()))
+                .filter(sameContact ->
+                        sameContact.getPhoneNumber()
+                                .equals(contact.getPhoneNumber()))
                 .findFirst()
-//                .ifPresent(MyAddressBookException)
-    };
+                .ifPresent(MyAddressBookException::new);
+    }
 }

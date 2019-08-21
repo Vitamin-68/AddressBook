@@ -1,6 +1,7 @@
 package dao;
 
 import entity.Contact;
+import exceptions.MyAddressBookException;
 
 import java.util.Scanner;
 
@@ -14,7 +15,7 @@ public interface ContactDao {
 
     void showAllContacts(int number);
 
-    Contact findById(int id);
+    Contact findById(int id) throws MyAddressBookException;
 
     boolean cloneContact(Contact contactCarrier, Contact contactTarget);
 }

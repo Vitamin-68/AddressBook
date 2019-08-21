@@ -49,7 +49,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact updateContact(Scanner scanner) {
+    public Contact updateContact(Scanner scanner) throws MyAddressBookException {
         Contact contact = new Contact();
         while (true) {
             System.out.println("Enter ID for update:");
@@ -152,11 +152,11 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public void showAllContacts() {
-        contactDao.showAllContacts();
+        contactDao.showAllContacts(5);
     }
 
     @Override
-    public Contact findById(Scanner scanner) {
+    public Contact findById(Scanner scanner) throws MyAddressBookException {
         while (true) {
             System.out.println("Enter ID of contact:");
             if (scanner.hasNextInt()) {
@@ -169,4 +169,8 @@ public class ContactServiceImpl implements ContactService {
         }
     }
 
+    @Override
+    public Contact findByName(Scanner scanner) {
+        return null;
+    }
 }
