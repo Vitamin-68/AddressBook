@@ -1,5 +1,6 @@
 package dao.impl;
 
+import constants.Constants;
 import constants.ResponseCode;
 import dao.ContactDao;
 import entity.Contact;
@@ -27,18 +28,6 @@ public class ContactDaoImpl implements ContactDao {
         return newContact;
     }
 
-//    @Override
-//    public Contact findById(int id) {
-//        for (Contact contact : contactTreeSet) {
-//            if (Objects.equals(contact.getId(), id)) {
-//                showOneContact(contact);
-//                return contact;
-//            }
-//        }
-//        System.out.println("Contact with ID = " + id + " not found.");
-//        return null;
-//    }
-
     @Override
     public Contact findById(int id) throws MyAddressBookException {
 
@@ -57,13 +46,6 @@ public class ContactDaoImpl implements ContactDao {
                 .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND, NOT_FOUND_MESSAGE));
     }
 
-//    @Override
-//    public Contact updateContact(Contact updatedContact) {
-//        updatedContact.setUpdateTime(LocalDateTime.now());
-//        cloneContact(updatedContact, findById(updatedContact.getId()));
-//        return updatedContact;
-//    }
-
     @Override
     public Contact updateContact(Contact contact) {
         contactTreeSet = contactTreeSet
@@ -77,66 +59,39 @@ public class ContactDaoImpl implements ContactDao {
         return contact;
     }
 
-
-//    @Override
-//    public boolean removeContact(int id, Scanner scanner) {
-//        Contact contact = findById(id);
-//        if (contact != null) {
-//            System.out.println("Do you really want to delete this contact?");
-//            if (scanner.next().equalsIgnoreCase("y")) {
-//                contactTreeSet.remove(contact);
-//                System.out.println("Contact with ID = " + id + " was deleted successfully.\n");
-//                return true;
-//            } else {
-//                System.out.println("Contact has not been deleted.\n");
-//                return false;
-//            }
-//        } else {
-//            System.out.println("Contact don't exist and can't be deleted.\n");
-//            return false;
-//        }
-//    }
-
-
-
     @Override
     public boolean removeContact(int id, Scanner scanner) {
         boolean result = contactTreeSet.removeIf(contact -> Objects.equals(contact.getId(), id));
         return result;
     }
 
-//    @Override
-//    public void showAllContacts() {
-//        for (Contact contact : contactTreeSet) {
-//            System.out.println(contact);
-//        }
-//        System.out.println("\n\n");
-//        contactTreeSet.stream()
-//                .sorted(Comparator.comparing(Contact::getName))
-//                .collect(Collectors
-//                        .toList()).forEach(System.out::println);
-//    }
-
     @Override
     public void showAllContacts(int number) {
         Comparator<Contact> comparator;
         switch (number) {
-            case 1:
+            case Constants.SORTED_BY_ID:
                 comparator = Comparator.comparing(Contact::getId);
-                // analogichno:
-//                comparator = new Comparator<Contact>() {
-//                    @Override
-//                    public int compare(Contact o1, Contact o2) {
-//                        if(o1.getId() > o2.getId()) {
-//                            return 1;
-//                        } else {
-//                            return -1;
-//                        }
-//                    }
-//                };
                 break;
-            case 2:
+            case Constants.SORTED_BY_NAME:
+                comparator = Comparator.comparing(Contact::getName);
+                    break;
+            case Constants.SORTED_BY_LAST_NAME:
                 comparator = Comparator.comparing(Contact::getLastName);
+                    break;
+            case Constants.SORTED_BY_AGE:
+                comparator = Comparator.comparing(Contact::getAge);
+                    break;
+            case Constants.SORTED_BY_PHONE:
+                comparator = Comparator.comparing(Contact::getPhoneNumber);
+                    break;
+            case Constants.SORTED_BY_STATUS:
+                comparator = Comparator.comparing(Contact::isMarried);
+                    break;
+            case Constants.SORTED_BY_DATE_OF_CREATE:
+                comparator = Comparator.comparing(Contact::getCreateDate);
+                    break;
+            case Constants.SORTED_BY_DATE_OF_UPDATE:
+                comparator = Comparator.comparing(Contact::getUpdateTime);
                     break;
             default:
                 comparator = Comparator.comparing(Contact::getId);
@@ -145,7 +100,6 @@ public class ContactDaoImpl implements ContactDao {
                     .sorted(comparator)
                     .collect(Collectors.toList())
                     .forEach((System.out::println));
-
     }
 
 

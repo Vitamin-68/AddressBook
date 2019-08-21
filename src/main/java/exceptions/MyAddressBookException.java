@@ -4,7 +4,7 @@ import constants.ResponseCode;
 import entity.Contact;
 
 public class MyAddressBookException extends Exception {
-    public ResponseCode code;
+    private ResponseCode code;
     private String message;
     public static final String NOT_FOUND_MESSAGE = "Contact not found";
 

@@ -1,5 +1,6 @@
 package service.impl;
 
+import constants.Constants;
 import constants.ResponseCode;
 import dao.ContactDao;
 import dao.impl.ContactDaoImpl;
@@ -12,12 +13,12 @@ import java.util.Scanner;
 
 public class ContactServiceImpl implements ContactService {
 
-    private final int SELECT_NAME_CONTACT = 2;
-    private final int SELECT_LAST_NAME_CONTACT = 3;
-    private final int SELECT_AGE_CONTACT = 4;
-    private final int SELECT_PHONE_CONTACT = 5;
-    private final int SELECT_STATUS_CONTACT = 6;
-    private final int EXIT = 0;
+//    private final int SELECT_NAME_CONTACT = 2;
+//    private final int SELECT_LAST_NAME_CONTACT = 3;
+//    private final int SELECT_AGE_CONTACT = 4;
+//    private final int SELECT_PHONE_CONTACT = 5;
+//    private final int SELECT_STATUS_CONTACT = 6;
+//    private final int EXIT = 0;
 
 
     private static final ContactDao contactDao = new ContactDaoImpl();
@@ -66,7 +67,7 @@ public class ContactServiceImpl implements ContactService {
                 scanner.next();
             }
         }
-        System.out.println("before update - " +contact);
+//        System.out.println("before update - " +contact);
 
         boolean exit = true, flagEditContact = false;
             do {
@@ -75,19 +76,19 @@ public class ContactServiceImpl implements ContactService {
                     if (scanner.hasNextInt()) {
                         int numberOfField = scanner.nextInt();
                         switch (numberOfField) {
-                            case SELECT_NAME_CONTACT: {
+                            case Constants.SELECT_NAME_CONTACT: {
                                 System.out.println("Enter new name:");
                                 contact.setName(scanner.next());
                                 flagEditContact = true;
                                 break;
                             }
-                            case SELECT_LAST_NAME_CONTACT: {
+                            case Constants.SELECT_LAST_NAME_CONTACT: {
                                 System.out.println("Enter new last name:");
                                 contact.setLastName(scanner.next());
                                 flagEditContact = true;
                                 break;
                             }
-                            case SELECT_AGE_CONTACT: {
+                            case Constants.SELECT_AGE_CONTACT: {
                                 System.out.println("Enter new age:");
                                 while (!scanner.hasNextInt()) {
                                     System.out.println("Indicate age in numbers!");
@@ -97,19 +98,19 @@ public class ContactServiceImpl implements ContactService {
                                 flagEditContact = true;
                                 break;
                             }
-                            case SELECT_PHONE_CONTACT: {
+                            case Constants.SELECT_PHONE_CONTACT: {
                                 System.out.println("Enter new number phone:");
                                 contact.setPhoneNumber(scanner.next());
                                 flagEditContact = true;
                                 break;
                             }
-                            case SELECT_STATUS_CONTACT: {
+                            case Constants.SELECT_STATUS_CONTACT: {
                                 System.out.println("Is contact married(y/n)?");
                                 contact.setMarried(scanner.next().equalsIgnoreCase("y"));
                                 flagEditContact = true;
                                 break;
                             }
-                            case EXIT: {
+                            case Constants.EXIT: {
                                 if (flagEditContact) {
                                     contactDao.updateContact(contact);
                                     System.out.println("Update is done.\n\n");
@@ -151,8 +152,18 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public void showAllContacts() {
-        contactDao.showAllContacts(5);
+    public void showAllContacts(Scanner scanner) {
+        subMenuShowAllContact();
+        while (true) {
+            System.out.println("Enter number of field to sort\nor press 0 for exit:");
+            if (scanner.hasNextInt()) {
+                int number = scanner.nextInt();
+                contactDao.showAllContacts(number);
+            } else {
+                System.out.println("You entered wrong number.");
+                scanner.next();
+            }
+        }
     }
 
     @Override
@@ -173,4 +184,17 @@ public class ContactServiceImpl implements ContactService {
     public Contact findByName(Scanner scanner) {
         return null;
     }
+
+    static void subMenuShowAllContact() {
+        System.out.println("Show all contacts sorted by:");
+        System.out.println("1. ID");
+        System.out.println("2. Name");
+        System.out.println("3. Last name");
+        System.out.println("4. Age");
+        System.out.println("5. Phone number");
+        System.out.println("6. Martial status");
+        System.out.println("7. Data of create");
+        System.out.println("8. Data of update");
+    }
+
 }

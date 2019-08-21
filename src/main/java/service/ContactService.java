@@ -13,7 +13,7 @@ public interface ContactService {
 
     boolean removeContact(Scanner scanner);
 
-    void showAllContacts();
+    void showAllContacts(Scanner scanner);
 
     Contact findById(Scanner scanner) throws MyAddressBookException;
 

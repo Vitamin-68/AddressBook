@@ -1,18 +1,12 @@
 package service;
 
+import constants.Constants;
 import exceptions.MyAddressBookException;
 import constants.ResponseCode;
 
 import java.util.Scanner;
 
 public interface CommandLineService {
-
-    int ADD_CONTACT = 1;
-    int UPDATE_CONTACT = 2;
-    int DELETE_CONTACT = 3;
-    int SHOW_ALL_CONTACT = 4;
-    int SHOW_CONTACT_BY_ID = 5;
-    int EXIT = 0;
 
     static void run(Scanner scanner, ContactService service) {
         boolean exit = true;
@@ -22,27 +16,31 @@ public interface CommandLineService {
             try {
                 if (scanner.hasNextInt()) {
                     switch (scanner.nextInt()) {
-                        case ADD_CONTACT: {
+                        case Constants.ADD_CONTACT: {
                             service.createContact(scanner);
                             break;
                         }
-                        case UPDATE_CONTACT: {
+                        case Constants.UPDATE_CONTACT: {
                             service.updateContact(scanner);
                             break;
                         }
-                        case DELETE_CONTACT: {
+                        case Constants.DELETE_CONTACT: {
                             service.removeContact(scanner);
                             break;
                         }
-                        case SHOW_ALL_CONTACT: {
-                            service.showAllContacts();
+                        case Constants.SHOW_ALL_CONTACT: {
+                            service.showAllContacts(scanner);
                             break;
                         }
-                        case SHOW_CONTACT_BY_ID: {
+                        case Constants.SHOW_CONTACT_BY_ID: {
                             service.findById(scanner);
                             break;
                         }
-                        case EXIT: {
+                        case Constants.SHOW_CONTACT_BY_NAME: {
+                            service.findByName(scanner);
+                            break;
+                        }
+                        case Constants.EXIT: {
                             System.out.println("Thank you that use our app. Good bye.");
                             exit = false;
                             break;
@@ -71,6 +69,8 @@ public interface CommandLineService {
         System.out.println("3. Delete contact");
         System.out.println("4. Show all contacts");
         System.out.println("5. Show contact by id");
+        System.out.println("6. Show contact by name");
         System.out.println("0. Exit");
     }
+
 }
