@@ -11,7 +11,7 @@ public interface CommandLineService {
     static void run(Scanner scanner, ContactService service) {
         boolean exit = true;
         do {
-            System.out.println("Enter number of operation (0-5):");
+            System.out.println("\nEnter number of operation (0-5):");
             showMenu();
             try {
                 if (scanner.hasNextInt()) {

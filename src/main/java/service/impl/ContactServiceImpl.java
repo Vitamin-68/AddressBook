@@ -13,14 +13,6 @@ import java.util.Scanner;
 
 public class ContactServiceImpl implements ContactService {
 
-//    private final int SELECT_NAME_CONTACT = 2;
-//    private final int SELECT_LAST_NAME_CONTACT = 3;
-//    private final int SELECT_AGE_CONTACT = 4;
-//    private final int SELECT_PHONE_CONTACT = 5;
-//    private final int SELECT_STATUS_CONTACT = 6;
-//    private final int EXIT = 0;
-
-
     private static final ContactDao contactDao = new ContactDaoImpl();
 
     public ContactServiceImpl(ContactDaoImpl contactDao) {
@@ -30,7 +22,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Contact createContact(Scanner scanner) {
         Contact contact = new Contact();
-        System.out.println("\n\nEnter name of new contact:");
+        System.out.println("\nEnter name of new contact:");
         contact.setName(scanner.next());
         System.out.println("Enter last name of new contact:");
         contact.setLastName(scanner.next());
@@ -67,7 +59,6 @@ public class ContactServiceImpl implements ContactService {
                 scanner.next();
             }
         }
-//        System.out.println("before update - " +contact);
 
         boolean exit = true, flagEditContact = false;
             do {
@@ -159,6 +150,9 @@ public class ContactServiceImpl implements ContactService {
             if (scanner.hasNextInt()) {
                 int number = scanner.nextInt();
                 contactDao.showAllContacts(number);
+                if (number == 0) {
+                    return;
+                }
             } else {
                 System.out.println("You entered wrong number.");
                 scanner.next();
@@ -172,7 +166,9 @@ public class ContactServiceImpl implements ContactService {
             System.out.println("Enter ID of contact:");
             if (scanner.hasNextInt()) {
                 int id = scanner.nextInt();
-                return contactDao.findById(id);
+                Contact contact =  contactDao.findById(id);
+                contactDao.showOneContact(contact);
+                return contact;
             } else {
                 System.out.println("You entered wrong ID number.");
                 scanner.next();
@@ -181,8 +177,12 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact findByName(Scanner scanner) {
-        return null;
+    public Contact findByName(Scanner scanner) throws MyAddressBookException {
+        System.out.println("Enter the name of contact:");
+        String name = scanner.next();
+        Contact contact = contactDao.findByName(name);
+        contactDao.showOneContact(contact);
+        return contact;
     }
 
     static void subMenuShowAllContact() {

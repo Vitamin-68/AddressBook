@@ -4,10 +4,8 @@ import constants.Constants;
 import constants.ResponseCode;
 import dao.ContactDao;
 import entity.Contact;
-import entity.ContactIdComparator;
 import exceptions.MyAddressBookException;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,11 +46,14 @@ public class ContactDaoImpl implements ContactDao {
 
     @Override
     public Contact updateContact(Contact contact) {
+        System.out.println(contact);
         contactTreeSet = contactTreeSet
                 .stream()
                 .peek(updatedContact -> {
                     if (Objects.equals(updatedContact.getId(), contact.getId())) {
                         updatedContact = contact;
+                        System.out.println("upd - " + updatedContact);
+                        contactTreeSet.forEach(System.out::println);
                     }
                 })
                 .collect(Collectors.toCollection(TreeSet::new));
@@ -61,8 +62,17 @@ public class ContactDaoImpl implements ContactDao {
 
     @Override
     public boolean removeContact(int id, Scanner scanner) {
-        boolean result = contactTreeSet.removeIf(contact -> Objects.equals(contact.getId(), id));
-        return result;
+        try {
+            showOneContact(findById(id));
+        } catch (MyAddressBookException e) {
+            System.out.println(e);
+        }
+        System.out.println("Do you want to delete this contact?");
+        if (scanner.next().equalsIgnoreCase("y")) {
+            boolean result = contactTreeSet.removeIf(contact -> Objects.equals(contact.getId(), id));
+            return result;
+        }
+        return false;
     }
 
     @Override
@@ -74,36 +84,39 @@ public class ContactDaoImpl implements ContactDao {
                 break;
             case Constants.SORTED_BY_NAME:
                 comparator = Comparator.comparing(Contact::getName);
-                    break;
+                break;
             case Constants.SORTED_BY_LAST_NAME:
                 comparator = Comparator.comparing(Contact::getLastName);
-                    break;
+                break;
             case Constants.SORTED_BY_AGE:
                 comparator = Comparator.comparing(Contact::getAge);
-                    break;
+                break;
             case Constants.SORTED_BY_PHONE:
                 comparator = Comparator.comparing(Contact::getPhoneNumber);
-                    break;
+                break;
             case Constants.SORTED_BY_STATUS:
                 comparator = Comparator.comparing(Contact::isMarried);
-                    break;
+                break;
             case Constants.SORTED_BY_DATE_OF_CREATE:
                 comparator = Comparator.comparing(Contact::getCreateDate);
-                    break;
+                break;
             case Constants.SORTED_BY_DATE_OF_UPDATE:
                 comparator = Comparator.comparing(Contact::getUpdateTime);
-                    break;
+                break;
+            case Constants.EXIT:
+                return;
             default:
+                System.out.println("Wrong number of field.\nContact list will be sorted by ID:");
                 comparator = Comparator.comparing(Contact::getId);
-            }
-            contactTreeSet.stream()
-                    .sorted(comparator)
-                    .collect(Collectors.toList())
-                    .forEach((System.out::println));
+        }
+        contactTreeSet.stream()
+                .sorted(comparator)
+                .collect(Collectors.toList())
+                .forEach((System.out::println));
     }
 
 
-    private void showOneContact(Contact contact) {
+    public void showOneContact(Contact contact) {
         System.out.println("1. ID: " + contact.getId());
         System.out.println("2. Name: " + contact.getName());
         System.out.println("3. Last name: " + contact.getLastName());
@@ -111,7 +124,7 @@ public class ContactDaoImpl implements ContactDao {
         System.out.println("5. Phone number: " + contact.getPhoneNumber());
         System.out.println("6. Martial status: : " + (contact.isMarried() ? "Married" : "No married"));
         System.out.println("7. Data of create: " + contact.getCreateDate());
-        System.out.println("8. Data of update: " + contact.getUpdateTime() + "\n\n");
+        System.out.println("8. Data of update: " + contact.getUpdateTime() + "\n");
     }
 
     @Override

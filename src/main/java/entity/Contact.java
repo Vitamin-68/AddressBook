@@ -2,7 +2,7 @@ package entity;
 
 import java.time.LocalDateTime;
 
-public class Contact {
+public class Contact implements Comparable{
     private int id;
     private String name;
     private String lastName;
@@ -126,15 +126,19 @@ public class Contact {
     @Override
     public String toString() {
         return "Contact{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", age=" + age +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", married=" + married +
-                ", createDate=" + createDate +
-                ", updateTime=" + updateTime +
+                "ID=" + id +
+                ", Name='" + name + '\'' +
+                ", Last Name='" + lastName + '\'' +
+                ", Age=" + age +
+                ", PhoneNumber='" + phoneNumber + '\'' +
+                ", Status=" + (married ? "Married" : "No married") +
+                ", CreateDate=" + createDate +
+                ", UpdateDate=" + updateTime +
                 '}';
     }
 
+    @Override
+    public int compareTo(Object o) {
+        return 0;
+    }
 }

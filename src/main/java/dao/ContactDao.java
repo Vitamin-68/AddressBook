@@ -17,5 +17,9 @@ public interface ContactDao {
 
     Contact findById(int id) throws MyAddressBookException;
 
+    Contact findByName(String name) throws MyAddressBookException;
+
+    void showOneContact(Contact contact);
+
     boolean cloneContact(Contact contactCarrier, Contact contactTarget);
 }

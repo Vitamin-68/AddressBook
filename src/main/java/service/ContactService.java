@@ -17,5 +17,5 @@ public interface ContactService {
 
     Contact findById(Scanner scanner) throws MyAddressBookException;
 
-    Contact findByName(Scanner scanner);
+    Contact findByName(Scanner scanner) throws MyAddressBookException;
 }
