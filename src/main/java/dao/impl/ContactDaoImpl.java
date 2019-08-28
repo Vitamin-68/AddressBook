@@ -62,9 +62,7 @@ public class ContactDaoImpl implements ContactDao {
         contactTreeSet
                 .stream()
                 .filter(updatedContact -> Objects.equals(updatedContact.getId(), contact.getId()))
-                .peek(updatedContact -> {
-                    cloneContact(contact, updatedContact);
-                })
+                .peek(updatedContact -> copyContact(contact, updatedContact))
                 .collect(Collectors.toCollection(TreeSet::new));
         return contact;
     }
@@ -138,8 +136,8 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     @Override
-    public boolean cloneContact(Contact contactCarrier, Contact contactTarget) {
-        if (contactCarrier != null && contactTarget != null) {
+    public boolean copyContact(Contact contactCarrier, Contact contactTarget) {
+        if (contactCarrier != null && contactTarget != null && !contactCarrier.equals(contactTarget)) {
             contactTarget.setId(contactCarrier.getId());
             contactTarget.setName(contactCarrier.getName());
             contactTarget.setLastName(contactCarrier.getLastName());

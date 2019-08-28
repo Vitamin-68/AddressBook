@@ -21,5 +21,5 @@ public interface ContactDao {
 
     void showOneContact(Contact contact);
 
-    boolean cloneContact(Contact contactCarrier, Contact contactTarget);
+    boolean copyContact(Contact contactCarrier, Contact contactTarget);
 }

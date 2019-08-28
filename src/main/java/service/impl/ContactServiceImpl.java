@@ -49,7 +49,7 @@ public class ContactServiceImpl implements ContactService {
             System.out.println("Enter ID for update:");
             if (scanner.hasNextInt()) {
                 int id = scanner.nextInt();
-                if (contactDao.cloneContact(contactDao.findById(id), contact)) {
+                if (contactDao.copyContact(contactDao.findById(id), contact)) {
                     break;
                 } else {
                     System.out.println("Update failed");
@@ -71,13 +71,13 @@ public class ContactServiceImpl implements ContactService {
                             case Constants.SELECT_NAME_CONTACT: {
                                 System.out.println("Enter new name:");
                                 contact.setName(scanner.next());
-                                flagEditContact = true;
+//                                flagEditContact = true;
                                 break;
                             }
                             case Constants.SELECT_LAST_NAME_CONTACT: {
                                 System.out.println("Enter new last name:");
                                 contact.setLastName(scanner.next());
-                                flagEditContact = true;
+//                                flagEditContact = true;
                                 break;
                             }
                             case Constants.SELECT_AGE_CONTACT: {
@@ -87,19 +87,19 @@ public class ContactServiceImpl implements ContactService {
                                     scanner.next();
                                 }
                                 contact.setAge(scanner.nextInt());
-                                flagEditContact = true;
+//                                flagEditContact = true;
                                 break;
                             }
                             case Constants.SELECT_PHONE_CONTACT: {
                                 System.out.println("Enter new number phone:");
                                 contact.setPhoneNumber(scanner.next());
-                                flagEditContact = true;
+//                                flagEditContact = true;
                                 break;
                             }
                             case Constants.SELECT_STATUS_CONTACT: {
                                 System.out.println("Is contact married(y/n)?");
                                 contact.setMarried(scanner.next().equalsIgnoreCase("y"));
-                                flagEditContact = true;
+//                                flagEditContact = true;
                                 break;
                             }
                             case Constants.EXIT: {
