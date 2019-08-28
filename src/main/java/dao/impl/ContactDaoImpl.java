@@ -6,6 +6,7 @@ import dao.ContactDao;
 import entity.Contact;
 import exceptions.MyAddressBookException;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,11 +34,11 @@ public class ContactDaoImpl implements ContactDao {
                 .stream()
                 .filter(contact -> contact.getId() == id)
                 .findFirst()
-                .orElseThrow(()-> new MyAddressBookException(ResponseCode.NOT_FOUND, NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND, NOT_FOUND_MESSAGE));
     }
 
     public Contact findByName(String name) throws MyAddressBookException {
-        return  contactTreeSet
+        return contactTreeSet
                 .stream()
                 .filter(contact -> contact.getName().equalsIgnoreCase(name))
                 .findFirst()
@@ -46,15 +47,23 @@ public class ContactDaoImpl implements ContactDao {
 
     @Override
     public Contact updateContact(Contact contact) {
-        System.out.println(contact);
-        contactTreeSet = contactTreeSet
+        contact.setUpdateDate(LocalDateTime.now());
+
+        // don't working, write on lesson
+//        contactTreeSet = contactTreeSet
+//                .stream()
+//                .peek(updatedContact -> {
+//                    if (Objects.equals(updatedContact.getId(), contact.getId())) {
+//                        updatedContact = contact;
+//                    }
+//                })
+//                .collect(Collectors.toCollection(TreeSet::new));
+
+        contactTreeSet
                 .stream()
+                .filter(updatedContact -> Objects.equals(updatedContact.getId(), contact.getId()))
                 .peek(updatedContact -> {
-                    if (Objects.equals(updatedContact.getId(), contact.getId())) {
-                        updatedContact = contact;
-                        System.out.println("upd - " + updatedContact);
-                        contactTreeSet.forEach(System.out::println);
-                    }
+                    cloneContact(contact, updatedContact);
                 })
                 .collect(Collectors.toCollection(TreeSet::new));
         return contact;
@@ -63,11 +72,12 @@ public class ContactDaoImpl implements ContactDao {
     @Override
     public boolean removeContact(int id, Scanner scanner) {
         try {
-            showOneContact(findById(id));
+            System.out.println(findById(id));
+//            showOneContact(findById(id));
         } catch (MyAddressBookException e) {
             System.out.println(e);
         }
-        System.out.println("Do you want to delete this contact?");
+        System.out.println("Do you want to delete this contact? (y/n):");
         if (scanner.next().equalsIgnoreCase("y")) {
             boolean result = contactTreeSet.removeIf(contact -> Objects.equals(contact.getId(), id));
             return result;
@@ -101,7 +111,7 @@ public class ContactDaoImpl implements ContactDao {
                 comparator = Comparator.comparing(Contact::getCreateDate);
                 break;
             case Constants.SORTED_BY_DATE_OF_UPDATE:
-                comparator = Comparator.comparing(Contact::getUpdateTime);
+                comparator = Comparator.comparing(Contact::getUpdateDate);
                 break;
             case Constants.EXIT:
                 return;
@@ -124,12 +134,12 @@ public class ContactDaoImpl implements ContactDao {
         System.out.println("5. Phone number: " + contact.getPhoneNumber());
         System.out.println("6. Martial status: : " + (contact.isMarried() ? "Married" : "No married"));
         System.out.println("7. Data of create: " + contact.getCreateDate());
-        System.out.println("8. Data of update: " + contact.getUpdateTime() + "\n");
+        System.out.println("8. Data of update: " + contact.getUpdateDate() + "\n");
     }
 
     @Override
     public boolean cloneContact(Contact contactCarrier, Contact contactTarget) {
-        if (contactCarrier != null && contactTarget != null){
+        if (contactCarrier != null && contactTarget != null) {
             contactTarget.setId(contactCarrier.getId());
             contactTarget.setName(contactCarrier.getName());
             contactTarget.setLastName(contactCarrier.getLastName());
@@ -137,7 +147,7 @@ public class ContactDaoImpl implements ContactDao {
             contactTarget.setPhoneNumber(contactCarrier.getPhoneNumber());
             contactTarget.setMarried(contactCarrier.isMarried());
             contactTarget.setCreateDate(contactCarrier.getCreateDate());
-            contactTarget.setUpdateTime(contactCarrier.getUpdateTime());
+            contactTarget.setUpdateDate(contactCarrier.getUpdateDate());
             return true;
         } else
             return false;

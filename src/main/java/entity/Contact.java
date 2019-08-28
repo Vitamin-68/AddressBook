@@ -1,6 +1,7 @@
 package entity;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Contact implements Comparable{
     private int id;
@@ -10,7 +11,9 @@ public class Contact implements Comparable{
     private String phoneNumber;
     private boolean married;
     private LocalDateTime createDate;
-    private LocalDateTime updateTime;
+    private LocalDateTime updateDate;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd  hh:mm:ss");
+
 
     public Contact() {
     }
@@ -26,7 +29,7 @@ public class Contact implements Comparable{
         this.phoneNumber = phoneNumber;
         this.married = married;
         this.createDate = createDate;
-        this.updateTime = updateTime;
+        this.updateDate = updateTime;
     }
 
     public int getId() {
@@ -82,15 +85,21 @@ public class Contact implements Comparable{
     }
 
     public void setCreateDate(LocalDateTime createDate) {
-        this.createDate = createDate;
+        String formattedDateTime = createDate.format(formatter);
+        this.createDate = LocalDateTime.parse(formattedDateTime, formatter);
+
+//        this.createDate = createDate;
     }
 
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
     }
 
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
+    public void setUpdateDate(LocalDateTime updateDate) {
+        String formattedDateTime = updateDate.format(formatter);
+        this.updateDate = LocalDateTime.parse(formattedDateTime, formatter);
+
+//        this.updateDate = updateDate;
     }
 
     @Override
@@ -107,7 +116,7 @@ public class Contact implements Comparable{
         if (lastName != null ? !lastName.equals(contact.lastName) : contact.lastName != null) return false;
         if (phoneNumber != null ? !phoneNumber.equals(contact.phoneNumber) : contact.phoneNumber != null) return false;
         if (createDate != null ? !createDate.equals(contact.createDate) : contact.createDate != null) return false;
-        return updateTime != null ? updateTime.equals(contact.updateTime) : contact.updateTime == null;
+        return updateDate != null ? updateDate.equals(contact.updateDate) : contact.updateDate == null;
     }
 
     @Override
@@ -119,22 +128,21 @@ public class Contact implements Comparable{
         result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
         result = 31 * result + (married ? 1 : 0);
         result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
-        result = 31 * result + (updateTime != null ? updateTime.hashCode() : 0);
+        result = 31 * result + (updateDate != null ? updateDate.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "Contact{" +
-                "ID=" + id +
-                ", Name='" + name + '\'' +
-                ", Last Name='" + lastName + '\'' +
-                ", Age=" + age +
-                ", PhoneNumber='" + phoneNumber + '\'' +
-                ", Status=" + (married ? "Married" : "No married") +
-                ", CreateDate=" + createDate +
-                ", UpdateDate=" + updateTime +
-                '}';
+        return  "1. ID=" + id +
+                "   2. Name='" + name + '\'' +
+                "   3. Last Name='" + lastName + '\'' +
+                "   4. Age=" + age +
+                "   5. PhoneNumber='" + phoneNumber + '\'' +
+                "   6. Status=" + (married ? "Married" : "No married") +
+                "   \n7. CreateDate=" + createDate +
+                "   8. UpdateDate=" + updateDate +
+                "\n";
     }
 
     @Override

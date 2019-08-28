@@ -15,6 +15,7 @@ public class ContactServiceImpl implements ContactService {
 
     private static final ContactDao contactDao = new ContactDaoImpl();
 
+
     public ContactServiceImpl(ContactDaoImpl contactDao) {
 
     }
@@ -37,7 +38,7 @@ public class ContactServiceImpl implements ContactService {
         System.out.println("Is contact married(y/n)?");
         contact.setMarried(scanner.next().equalsIgnoreCase("y"));
         contact.setCreateDate(LocalDateTime.now());
-        contact.setUpdateTime(LocalDateTime.now());
+        contact.setUpdateDate(LocalDateTime.now());
         return contactDao.createContact(contact);
     }
 
@@ -106,7 +107,7 @@ public class ContactServiceImpl implements ContactService {
                                     contactDao.updateContact(contact);
                                     System.out.println("Update is done.\n\n");
                                 } else {
-                                    System.out.println("Nothing selected fo update.\n\n");
+                                    System.out.println("Nothing selected fo update.\n");
                                 }
                                 exit = false;
                                 break;
