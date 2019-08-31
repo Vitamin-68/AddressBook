@@ -52,7 +52,7 @@ public class ContactDaoImpl implements ContactDao {
                 System.out.println("5. Phone number: " + contact.getPhoneNumber());
                 System.out.println("6. Martial status: : " + (contact.isMarried() ? "Married" : "No married"));
                 System.out.println("7. Data of create: " + contact.getCreateDate());
-                System.out.println("8. Data of update: " + contact.getUpdateTime()); //название метода некорректное будет и дата и время
+                System.out.println("8. Data of update: " + contact.getUpdateTime());
                 return contact;
             }
         }
@@ -92,7 +92,9 @@ public class ContactDaoImpl implements ContactDao {
     @Override
     public void showAllContacts() {
         for (Contact contact : contacts) {
-            System.out.println(contact);
+            if (!Objects.isNull(contact)) {
+                System.out.println(contact);
+            }
         }
     }
 

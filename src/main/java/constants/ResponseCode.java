@@ -1,16 +1,16 @@
 package constants;
 
 public enum ResponseCode {
-    WRONG_DATA_TYPE;
+    WRONG_DATA_TYPE(302);
 
     private int code;
 
-    public int getCode() {
-        return code;
+    ResponseCode(int code) {
+
     }
 
-    public void setCode(int code) {
-        this.code = code;
+    public int getCode() {
+        return code;
     }
 
 }

@@ -32,7 +32,6 @@ public interface CommandLineService {
                             break;
                         }
                         case 5: {
-//                            System.out.println(service.findById(scanner));
                             service.findById(scanner);
                             break;
                         }

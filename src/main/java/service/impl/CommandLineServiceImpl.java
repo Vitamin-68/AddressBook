@@ -1,7 +1,6 @@
 package service.impl;
 
 import dao.impl.ContactDaoImpl;
-import exceptions.MyAddressBookException;
 import service.CommandLineService;
 import service.ContactService;
 
