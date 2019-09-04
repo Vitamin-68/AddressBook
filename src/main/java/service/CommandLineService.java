@@ -4,40 +4,45 @@ import constants.Constants;
 import exceptions.MyAddressBookException;
 import constants.ResponseCode;
 
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 public interface CommandLineService {
 
-    static void run(Scanner scanner, ContactService service) {
+    static void run(BufferedReader bufReader, ContactService service) {
         boolean exit = true;
         do {
-            System.out.println("\nEnter number of operation (0-5):");
+            System.out.println("\nEnter number of operation (0-6 or 9 fo test):");
             showMenu();
             try {
-                if (scanner.hasNextInt()) {
-                    switch (scanner.nextInt()) {
+                int inputInt = Integer.parseInt(bufReader.readLine().trim());
+                    switch (inputInt) {
                         case Constants.ADD_CONTACT: {
-                            service.createContact(scanner);
+                            service.createContact(bufReader);
                             break;
                         }
                         case Constants.UPDATE_CONTACT: {
-                            service.updateContact(scanner);
+                            service.updateContact(bufReader);
                             break;
                         }
                         case Constants.DELETE_CONTACT: {
-                            service.removeContact(scanner);
+                            service.removeContact(bufReader);
                             break;
                         }
                         case Constants.SHOW_ALL_CONTACT: {
-                            service.showAllContacts(scanner);
+                            service.showAllContacts(bufReader);
                             break;
                         }
                         case Constants.SHOW_CONTACT_BY_ID: {
-                            service.findById(scanner);
+                            service.findById(bufReader);
                             break;
                         }
                         case Constants.SHOW_CONTACT_BY_NAME: {
-                            service.findByName(scanner);
+                            service.findByName(bufReader);
+                            break;
+                        }
+                        case Constants.TEST: {
+                            service.test();
                             break;
                         }
                         case Constants.EXIT: {
@@ -51,10 +56,8 @@ public interface CommandLineService {
                         }
                     }
 
-                } else {
-                    System.out.println("You entered wrong number");
-                    scanner.next();
-                }
+            } catch (IOException e) {
+                System.out.println("Please enter ");;
             } catch (MyAddressBookException e) {
                 System.out.println(e.getMessage());
             }
@@ -70,6 +73,7 @@ public interface CommandLineService {
         System.out.println("4. Show all contacts");
         System.out.println("5. Show contact by id");
         System.out.println("6. Show contact by name");
+        System.out.println("9. Add 4 contacts for test");
         System.out.println("0. Exit");
     }
 

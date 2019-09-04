@@ -6,6 +6,8 @@ import dao.ContactDao;
 import entity.Contact;
 import exceptions.MyAddressBookException;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,10 +22,11 @@ public class ContactDaoImpl implements ContactDao {
 
     @Override
     public Contact createContact(Contact newContact) {
+
         newContact.setId(++generator);
         contactTreeSet.add(newContact);
         System.out.println("New contact added successfully:");
-        showOneContact(newContact);
+        System.out.println(newContact);
         return newContact;
     }
 
@@ -38,6 +41,7 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     public Contact findByName(String name) throws MyAddressBookException {
+
         return contactTreeSet
                 .stream()
                 .filter(contact -> contact.getName().equalsIgnoreCase(name))
@@ -47,7 +51,6 @@ public class ContactDaoImpl implements ContactDao {
 
     @Override
     public Contact updateContact(Contact contact) {
-        contact.setUpdateDate(LocalDateTime.now());
 
         // don't working, write on lesson
 //        contactTreeSet = contactTreeSet
@@ -68,17 +71,25 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     @Override
-    public boolean removeContact(int id, Scanner scanner) {
+    public boolean removeContact(int id, BufferedReader bufReader) {
         try {
             System.out.println(findById(id));
-//            showOneContact(findById(id));
         } catch (MyAddressBookException e) {
             System.out.println(e);
         }
         System.out.println("Do you want to delete this contact? (y/n):");
-        if (scanner.next().equalsIgnoreCase("y")) {
-            boolean result = contactTreeSet.removeIf(contact -> Objects.equals(contact.getId(), id));
-            return result;
+        try {
+            if (bufReader.readLine().equalsIgnoreCase("y"))  {
+                boolean result = contactTreeSet.removeIf(contact -> Objects.equals(contact.getId(), id));
+                if (result) {
+                    System.out.println("Contact with ID = " + id + " deleted successfully.");
+                } else System.out.println("Delete failed");
+                return result;
+            }
+        } catch (NumberFormatException e) {
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return false;
     }

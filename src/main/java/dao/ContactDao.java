@@ -3,6 +3,7 @@ package dao;
 import entity.Contact;
 import exceptions.MyAddressBookException;
 
+import java.io.BufferedReader;
 import java.util.Scanner;
 
 public interface ContactDao {
@@ -11,7 +12,7 @@ public interface ContactDao {
 
     Contact updateContact(Contact updatedContact);
 
-    boolean removeContact(int id, Scanner scanner);
+    boolean removeContact(int id, BufferedReader bufferedReader);
 
     void showAllContacts(int number);
 

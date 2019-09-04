@@ -3,19 +3,22 @@ package service;
 import entity.Contact;
 import exceptions.MyAddressBookException;
 
+import java.io.BufferedReader;
 import java.util.Scanner;
 
 public interface ContactService {
 
-    Contact createContact(Scanner scanner);
+    Contact createContact(BufferedReader bufferedReader);
 
-    Contact updateContact(Scanner scanner) throws MyAddressBookException;
+    Contact updateContact(BufferedReader bufferedReader) throws MyAddressBookException;
 
-    boolean removeContact(Scanner scanner);
+    boolean removeContact(BufferedReader bufferedReader);
 
-    void showAllContacts(Scanner scanner);
+    void showAllContacts(BufferedReader bufferedReader);
 
-    Contact findById(Scanner scanner) throws MyAddressBookException;
+    Contact findById(BufferedReader bufferedReader) throws MyAddressBookException;
 
-    Contact findByName(Scanner scanner) throws MyAddressBookException;
+    Contact findByName(BufferedReader bufferedReader) throws MyAddressBookException;
+
+    void test();
 }

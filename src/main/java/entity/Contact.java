@@ -1,7 +1,9 @@
 package entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import dao.ContactDao;
 
 public class Contact implements Comparable{
     private int id;
@@ -85,10 +87,9 @@ public class Contact implements Comparable{
     }
 
     public void setCreateDate(LocalDateTime createDate) {
-        String formattedDateTime = createDate.format(formatter);
-        this.createDate = LocalDateTime.parse(formattedDateTime, formatter);
-
-//        this.createDate = createDate;
+//        String formattedDateTime = createDate.format(formatter);
+//        this.createDate = LocalDateTime.parse(formattedDateTime, formatter);
+        this.createDate = createDate;
     }
 
     public LocalDateTime getUpdateDate() {
@@ -96,10 +97,10 @@ public class Contact implements Comparable{
     }
 
     public void setUpdateDate(LocalDateTime updateDate) {
-        String formattedDateTime = updateDate.format(formatter);
-        this.updateDate = LocalDateTime.parse(formattedDateTime, formatter);
+//        String formattedDateTime = this.updateDate.format(formatter);
+//        this.updateDate = LocalDateTime.parse(formattedDateTime, formatter);
 
-//        this.updateDate = updateDate;
+        this.updateDate = updateDate;
     }
 
     @Override
@@ -134,15 +135,14 @@ public class Contact implements Comparable{
 
     @Override
     public String toString() {
-        return  "1. ID=" + id +
-                "   2. Name='" + name + '\'' +
-                "   3. Last Name='" + lastName + '\'' +
-                "   4. Age=" + age +
-                "   5. PhoneNumber='" + phoneNumber + '\'' +
-                "   6. Status=" + (married ? "Married" : "No married") +
-                "   \n7. CreateDate=" + createDate +
-                "   8. UpdateDate=" + updateDate +
-                "\n";
+        return  "ID=" + id +
+                ",  Name='" + name + '\'' +
+                ",  Last Name='" + lastName + '\'' +
+                ",  Age=" + age +
+                ",  Phone Number='" + phoneNumber + '\'' +
+                ",  Status=" + (married ? "Married" : "No married") +
+                ",  Create Date=" + createDate.format(formatter) +
+                ",  Update Date=" + updateDate.format(formatter);
     }
 
     @Override
