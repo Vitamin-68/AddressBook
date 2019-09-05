@@ -53,20 +53,20 @@ public class ContactDaoImpl implements ContactDao {
     public Contact updateContact(Contact contact) {
 
         // don't working, write on lesson
-//        contactTreeSet = contactTreeSet
-//                .stream()
-//                .peek(updatedContact -> {
-//                    if (Objects.equals(updatedContact.getId(), contact.getId())) {
-//                        updatedContact = contact;
-//                    }
-//                })
-//                .collect(Collectors.toCollection(TreeSet::new));
-
-        contactTreeSet
+        contactTreeSet = contactTreeSet
                 .stream()
-                .filter(updatedContact -> Objects.equals(updatedContact.getId(), contact.getId()))
-                .peek(updatedContact -> copyContact(contact, updatedContact))
+                .peek(updatedContact -> {
+                    if (Objects.equals(updatedContact.getId(), contact.getId())) {
+                        copyContact(contact, updatedContact);
+                    }
+                })
                 .collect(Collectors.toCollection(TreeSet::new));
+
+//        contactTreeSet
+//                .stream()
+//                .filter(updatedContact -> Objects.equals(updatedContact.getId(), contact.getId()))
+//                .peek(updatedContact -> copyContact(contact, updatedContact))
+//                .collect(Collectors.toCollection(TreeSet::new));
         return contact;
     }
 
@@ -162,24 +162,24 @@ public class ContactDaoImpl implements ContactDao {
             return false;
     }
 
-    private void searchSameContact(Contact contact) throws MyAddressBookException {
-        Optional<Contact> sameContactOpt = contactTreeSet.stream()
-                .filter(sameContact -> sameContact
-                        .getPhoneNumber()
-                        .equals(contact.getPhoneNumber()))
-                .findFirst();
-        if (sameContactOpt.isPresent()) {
-            throw new MyAddressBookException(ResponseCode.OBJECT_EXIST,
-                    "Same contact is exist with id" + sameContactOpt.get().getId());
-        }
-    }
-
-    private void searchSameContact2(Contact contact) {
-        contactTreeSet.stream()
-                .filter(sameContact ->
-                        sameContact.getPhoneNumber()
-                                .equals(contact.getPhoneNumber()))
-                .findFirst()
-                .ifPresent(MyAddressBookException::new);
-    }
+//    private void searchSameContact(Contact contact) throws MyAddressBookException {
+//        Optional<Contact> sameContactOpt = contactTreeSet.stream()
+//                .filter(sameContact -> sameContact
+//                        .getPhoneNumber()
+//                        .equals(contact.getPhoneNumber()))
+//                .findFirst();
+//        if (sameContactOpt.isPresent()) {
+//            throw new MyAddressBookException(ResponseCode.OBJECT_EXIST,
+//                    "Same contact is exist with id" + sameContactOpt.get().getId());
+//        }
+//    }
+//
+//    private void searchSameContact2(Contact contact) {
+//        contactTreeSet.stream()
+//                .filter(sameContact ->
+//                        sameContact.getPhoneNumber()
+//                                .equals(contact.getPhoneNumber()))
+//                .findFirst()
+//                .ifPresent(MyAddressBookException::new);
+//    }
 }

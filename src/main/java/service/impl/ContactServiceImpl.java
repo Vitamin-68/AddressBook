@@ -23,22 +23,23 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact createContact(BufferedReader bufReader) {
+    public Contact createContact(BufferedReader bufReader) throws IOException {
         Contact contact = new Contact();
         System.out.println("\nEnter name of new contact:");
-        contact.setName(scanner.next());
+        contact.setName(bufReader.readLine().trim());
         System.out.println("Enter last name of new contact:");
-        contact.setLastName(scanner.next());
+        contact.setLastName(bufReader.readLine().trim());
         System.out.println("Enter age of new contact");
-        while (!scanner.hasNextInt()) {
-            System.out.println("Enter age in numbers!");
-            scanner.next();
-        }
-        contact.setAge(scanner.nextInt());
+        System.out.println("Enter age in numbers!");
+        contact.setAge(Integer.parseInt(bufReader.readLine().trim()));
         System.out.println("Enter phone number of new contact");
-        contact.setPhoneNumber(scanner.next());
+        contact.setPhoneNumber(Integer.parseInt(bufReader.readLine().trim()));
         System.out.println("Is contact married(y/n)?");
-        contact.setMarried(scanner.next().equalsIgnoreCase("y"));
+        if (bufReader.readLine().trim().equalsIgnoreCase("y")) {
+            contact.setMarried(true);
+        } else {
+            contact.setMarried(false);
+        }
         contact.setCreateDate(LocalDateTime.now());
         contact.setUpdateDate(LocalDateTime.now());
         return contactDao.createContact(contact);
@@ -50,8 +51,8 @@ public class ContactServiceImpl implements ContactService {
         int id;
         while (true) {
             System.out.println("Enter contact's ID for update:");
-            if (scanner.hasNextInt()) {
-                id = scanner.nextInt();
+            try {
+                id = Integer.parseInt(bufReader.readLine().trim());
                 if (contactDao.copyContact(contactDao.findById(id), contact)) {
                     System.out.println(contact);
                     break;
@@ -59,9 +60,8 @@ public class ContactServiceImpl implements ContactService {
                     System.out.println("Update failed");
                     return contact;
                 }
-            } else {
-                System.out.println("You entered wrong ID number.");
-                scanner.next();
+            } catch (IOException e) {
+                System.out.println("Not number");
             }
         }
         boolean exit = true;
@@ -74,62 +74,60 @@ public class ContactServiceImpl implements ContactService {
             System.out.println("5 - Married status");
             System.out.println("0 - Save contact and exit to previous menu");
             try {
-                if (scanner.hasNextInt()) {
-                    int numberOfField = scanner.nextInt();
-                    switch (numberOfField) {
-                        case Constants.SELECT_NAME_CONTACT: {
-                            System.out.println("Enter new name:");
-                            contact.setName(scanner.next());
-                            contact.setUpdateDate(LocalDateTime.now());
-                            break;
-                        }
-                        case Constants.SELECT_LAST_NAME_CONTACT: {
-                            System.out.println("Enter new last name:");
-                            contact.setLastName(scanner.next());
-                            contact.setUpdateDate(LocalDateTime.now());
-                            break;
-                        }
-                        case Constants.SELECT_AGE_CONTACT: {
-                            System.out.println("Enter new age:");
-                            while (!scanner.hasNextInt()) {
-                                System.out.println("Enter age in numbers!");
-                                scanner.next();
-                            }
-                            contact.setAge(scanner.nextInt());
-                            contact.setUpdateDate(LocalDateTime.now());
-                            break;
-                        }
-                        case Constants.SELECT_PHONE_CONTACT: {
-                            System.out.println("Enter new number phone:");
-                            contact.setPhoneNumber(scanner.next());
-                            contact.setUpdateDate(LocalDateTime.now());
-                            break;
-                        }
-                        case Constants.SELECT_STATUS_CONTACT: {
-                            System.out.println("Is contact married(y/n)?");
-                            contact.setMarried(scanner.next().equalsIgnoreCase("y"));
-                            contact.setUpdateDate(LocalDateTime.now());
-                            break;
-                        }
-                        case Constants.EXIT: {
-//                            System.out.println(contactDao.updateContact(contact)); Почему так не срабатывает???
-                            System.out.println(contact);
-                            contactDao.updateContact(contact);
-                            System.out.println("Update is done.");
-                            exit = false;
-                            break;
-                        }
-                        default: {
-                            throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
-                                    "You enter wrong number of operation");
-                        }
+                int numberOfField = Integer.parseInt(bufReader.readLine().trim());
+                switch (numberOfField) {
+                    case Constants.SELECT_NAME_CONTACT: {
+                        System.out.println("Enter new name:");
+                        contact.setName(bufReader.readLine().trim());
+                        contact.setUpdateDate(LocalDateTime.now());
+                        break;
                     }
-                } else {
-                    System.out.println("You entered wrong number");
-                    scanner.next();
+                    case Constants.SELECT_LAST_NAME_CONTACT: {
+                        System.out.println("Enter new last name:");
+                        contact.setLastName(bufReader.readLine().trim());
+                        contact.setUpdateDate(LocalDateTime.now());
+                        break;
+                    }
+                    case Constants.SELECT_AGE_CONTACT: {
+                        System.out.println("Enter new age:");
+//                        System.out.println("Enter age in numbers!");
+                        contact.setAge(Integer.parseInt(bufReader.readLine().trim()));
+                        contact.setUpdateDate(LocalDateTime.now());
+                        break;
+                    }
+                    case Constants.SELECT_PHONE_CONTACT: {
+                        System.out.println("Enter new number phone:");
+                        contact.setPhoneNumber(Integer.parseInt(bufReader.readLine().trim()));
+                        contact.setUpdateDate(LocalDateTime.now());
+                        break;
+                    }
+                    case Constants.SELECT_STATUS_CONTACT: {
+                        System.out.println("Is contact married(y/n)?");
+                        if (bufReader.readLine().trim().equalsIgnoreCase("y")) {
+                            contact.setMarried(true);
+                        } else {
+                            contact.setMarried(false);
+                        }
+                        contact.setUpdateDate(LocalDateTime.now());
+                        break;
+                    }
+                    case Constants.EXIT: {
+//                            System.out.println(contactDao.updateContact(contact)); Почему так не срабатывает???
+                        System.out.println(contact);
+                        contactDao.updateContact(contact);
+                        System.out.println("Update is done.");
+                        exit = false;
+                        break;
+                    }
+                    default: {
+                        throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
+                                "You enter wrong number of operation");
+                    }
                 }
+            } catch (IOException e) {
+                System.out.println("Not number");
             } catch (MyAddressBookException e) {
-                System.out.println(e.getMessage());
+                System.out.println("What is going wrong.");
             }
         } while (exit);
         return contact;
@@ -156,43 +154,44 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public void showAllContacts(Scanner scanner) {
+    public void showAllContacts(BufferedReader bufReader) {
         subMenuShowAllContact();
         while (true) {
             System.out.println("Enter number of field to sort\nor press 0 for exit to previous menu:");
-            if (scanner.hasNextInt()) {
-                int number = scanner.nextInt();
-                contactDao.showAllContacts(number);
-                if (number == 0) {
-                    return;
-                }
+            int number = 0;
+            try {
+                number = Integer.parseInt(bufReader.readLine().trim());
+            } catch (IOException e) {
+                System.out.println("Not number");
+            }
+            if (number == 0) {
+                return;
             } else {
-                System.out.println("You entered wrong number.");
-                scanner.next();
+                contactDao.showAllContacts(number);
             }
         }
     }
 
     @Override
-    public Contact findById(Scanner scanner) throws MyAddressBookException {
+    public Contact findById(BufferedReader bufReader) throws MyAddressBookException {
         while (true) {
             System.out.println("Enter ID of contact:");
-            if (scanner.hasNextInt()) {
-                int id = scanner.nextInt();
-                Contact contact = contactDao.findById(id);
-                System.out.println(contact);
-                return contact;
-            } else {
-                System.out.println("You entered wrong ID number.");
-                scanner.next();
+            int id = 0;
+            try {
+                id = Integer.parseInt(bufReader.readLine().trim());
+            } catch (IOException e) {
+                System.out.println("Not number");
             }
+            Contact contact = contactDao.findById(id);
+            System.out.println(contact);
+            return contact;
         }
     }
 
     @Override
-    public Contact findByName(Scanner scanner) throws MyAddressBookException {
+    public Contact findByName(BufferedReader bufReader) throws MyAddressBookException, IOException {
         System.out.println("Enter the name of contact:");
-        String name = scanner.next();
+        String name = bufReader.readLine().trim();
         Contact contact = contactDao.findByName(name);
         System.out.println(contact);
         return contact;
@@ -201,16 +200,16 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public void test() {
         Contact contact1 = new Contact("Tim", "Timov",
-                21, "1234", true,
+                21, 1234, true,
                 LocalDateTime.now(), LocalDateTime.now());
         Contact contact2 = new Contact("Dim", "Dimov",
-                21, "5678", false,
+                38, 5678, false,
                 LocalDateTime.now(), LocalDateTime.now());
         Contact contact3 = new Contact("Jon", "Jonov",
-                21, "9876", true,
+                150, 9876, true,
                 LocalDateTime.now(), LocalDateTime.now());
         Contact contact4 = new Contact("Alex", "Alexov",
-                21, "5432", false,
+                5, 5432, false,
                 LocalDateTime.now(), LocalDateTime.now());
         contactDao.createContact(contact1);
         contactDao.createContact(contact2);

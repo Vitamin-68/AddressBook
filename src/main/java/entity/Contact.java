@@ -1,16 +1,16 @@
 package entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import dao.ContactDao;
+import java.util.Objects;
+
 
 public class Contact implements Comparable{
     private int id;
     private String name;
     private String lastName;
     private int age;
-    private String phoneNumber;
+    private int phoneNumber;
     private boolean married;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
@@ -21,7 +21,7 @@ public class Contact implements Comparable{
     }
 
     public Contact(String name, String lastName,
-                   int age, String phoneNumber,
+                   int age, int phoneNumber,
                    boolean married,
                    LocalDateTime createDate,
                    LocalDateTime updateTime) {
@@ -66,11 +66,11 @@ public class Contact implements Comparable{
         this.age = age;
     }
 
-    public String getPhoneNumber() {
+    public int getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(int phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -107,30 +107,21 @@ public class Contact implements Comparable{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Contact contact = (Contact) o;
-
-        if (id != contact.id) return false;
-        if (age != contact.age) return false;
-        if (married != contact.married) return false;
-        if (name != null ? !name.equals(contact.name) : contact.name != null) return false;
-        if (lastName != null ? !lastName.equals(contact.lastName) : contact.lastName != null) return false;
-        if (phoneNumber != null ? !phoneNumber.equals(contact.phoneNumber) : contact.phoneNumber != null) return false;
-        if (createDate != null ? !createDate.equals(contact.createDate) : contact.createDate != null) return false;
-        return updateDate != null ? updateDate.equals(contact.updateDate) : contact.updateDate == null;
+        return id == contact.id &&
+                age == contact.age &&
+                phoneNumber == contact.phoneNumber &&
+                married == contact.married &&
+                Objects.equals(name, contact.name) &&
+                Objects.equals(lastName, contact.lastName) &&
+                Objects.equals(createDate, contact.createDate) &&
+                Objects.equals(updateDate, contact.updateDate) &&
+                Objects.equals(formatter, contact.formatter);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-        result = 31 * result + age;
-        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
-        result = 31 * result + (married ? 1 : 0);
-        result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
-        result = 31 * result + (updateDate != null ? updateDate.hashCode() : 0);
-        return result;
+        return Objects.hash(id, name, lastName, age, phoneNumber, married, createDate, updateDate, formatter);
     }
 
     @Override
