@@ -37,7 +37,8 @@ public class ContactDaoImpl implements ContactDao {
                 .stream()
                 .filter(contact -> contact.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND, NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND,
+                        "Contact with ID = " + id + " not exist"));
     }
 
     public Contact findByName(String name) throws MyAddressBookException {
@@ -53,20 +54,21 @@ public class ContactDaoImpl implements ContactDao {
     public Contact updateContact(Contact contact) {
 
         // don't working, write on lesson
-        contactTreeSet = contactTreeSet
-                .stream()
-                .peek(updatedContact -> {
-                    if (Objects.equals(updatedContact.getId(), contact.getId())) {
-                        copyContact(contact, updatedContact);
-                    }
-                })
-                .collect(Collectors.toCollection(TreeSet::new));
-
-//        contactTreeSet
+//        contactTreeSet = contactTreeSet
 //                .stream()
-//                .filter(updatedContact -> Objects.equals(updatedContact.getId(), contact.getId()))
-//                .peek(updatedContact -> copyContact(contact, updatedContact))
+////                .filter(updatedContact -> Objects.equals(updatedContact.getId(), contact.getId()))
+//                .peek(updatedContact -> {
+//                    if (Objects.equals(updatedContact.getId(), contact.getId())) {
+//                        copyContact(contact, updatedContact);
+//                    }
+//                })
 //                .collect(Collectors.toCollection(TreeSet::new));
+
+        contactTreeSet
+                .stream()
+                .filter(updatedContact -> Objects.equals(updatedContact.getId(), contact.getId()))
+                .peek(updatedContact -> copyContact(contact, updatedContact))
+                .collect(Collectors.toCollection(TreeSet::new));
         return contact;
     }
 

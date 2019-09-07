@@ -11,7 +11,7 @@ public interface ContactService {
 
     Contact createContact(BufferedReader bufferedReader) throws IOException;
 
-    Contact updateContact(BufferedReader bufferedReader) throws MyAddressBookException;
+    Contact updateContact(BufferedReader bufferedReader) throws IOException;
 
     boolean removeContact(BufferedReader bufferedReader);
 

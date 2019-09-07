@@ -46,7 +46,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact updateContact(BufferedReader bufReader) throws MyAddressBookException {
+    public Contact updateContact(BufferedReader bufReader) throws IOException {
         Contact contact = new Contact();
         int id;
         while (true) {
@@ -60,8 +60,10 @@ public class ContactServiceImpl implements ContactService {
                     System.out.println("Update failed");
                     return contact;
                 }
-            } catch (IOException e) {
-                System.out.println("Not number");
+            } catch (MyAddressBookException e) {
+                System.out.println(e.getMessage());
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter ONLY number");
             }
         }
         boolean exit = true;
@@ -123,11 +125,12 @@ public class ContactServiceImpl implements ContactService {
                         throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
                                 "You enter wrong number of operation");
                     }
+
                 }
-            } catch (IOException e) {
-                System.out.println("Not number");
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter ONLY number");
             } catch (MyAddressBookException e) {
-                System.out.println("What is going wrong.");
+                System.out.println(e.getMessage());
             }
         } while (exit);
         return contact;

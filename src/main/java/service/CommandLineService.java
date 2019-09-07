@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public interface CommandLineService {
 
-    static void run(BufferedReader bufReader, ContactService service) {
+    static void run(BufferedReader bufReader, ContactService service) throws IOException {
         boolean exit = true;
         do {
             System.out.println("\nEnter number of operation (0-6 or 9 fo test):");
@@ -56,8 +56,8 @@ public interface CommandLineService {
                         }
                     }
 
-            } catch (IOException e) {
-                System.out.println("Please enter ");;
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter ONLY number");
             } catch (MyAddressBookException e) {
                 System.out.println(e.getMessage());
             }
