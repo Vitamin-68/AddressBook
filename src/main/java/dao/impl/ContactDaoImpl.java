@@ -76,23 +76,20 @@ public class ContactDaoImpl implements ContactDao {
     public boolean removeContact(int id, BufferedReader bufReader) {
         try {
             System.out.println(findById(id));
-        } catch (MyAddressBookException e) {
-            System.out.println(e);
-        }
-        System.out.println("Do you want to delete this contact? (y/n):");
-        try {
-            if (bufReader.readLine().equalsIgnoreCase("y"))  {
+            System.out.println("Do you want to delete this contact? (y/n):");
+            if (bufReader.readLine().equalsIgnoreCase("y")) {
                 boolean result = contactTreeSet.removeIf(contact -> Objects.equals(contact.getId(), id));
                 if (result) {
                     System.out.println("Contact with ID = " + id + " deleted successfully.");
                 } else System.out.println("Delete failed");
                 return result;
             }
-        } catch (NumberFormatException e) {
-
+        } catch (MyAddressBookException e) {
+            System.out.println(e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return false;
     }
 

@@ -11,7 +11,6 @@ import service.ContactService;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Scanner;
 
 public class ContactServiceImpl implements ContactService {
 
@@ -29,17 +28,9 @@ public class ContactServiceImpl implements ContactService {
         contact.setName(bufReader.readLine().trim());
         System.out.println("Enter last name of new contact:");
         contact.setLastName(bufReader.readLine().trim());
-        System.out.println("Enter age of new contact");
-        System.out.println("Enter age in numbers!");
-        contact.setAge(Integer.parseInt(bufReader.readLine().trim()));
-        System.out.println("Enter phone number of new contact");
-        contact.setPhoneNumber(Integer.parseInt(bufReader.readLine().trim()));
-        System.out.println("Is contact married(y/n)?");
-        if (bufReader.readLine().trim().equalsIgnoreCase("y")) {
-            contact.setMarried(true);
-        } else {
-            contact.setMarried(false);
-        }
+        enterAgeInNumbers("Enter age of new contact:", contact, bufReader);
+        enterPhoneInNumbers("Enter phone number of new contact:", contact, bufReader);
+        setMarriedStatus(contact, bufReader);
         contact.setCreateDate(LocalDateTime.now());
         contact.setUpdateDate(LocalDateTime.now());
         return contactDao.createContact(contact);
@@ -91,30 +82,20 @@ public class ContactServiceImpl implements ContactService {
                         break;
                     }
                     case Constants.SELECT_AGE_CONTACT: {
-                        System.out.println("Enter new age:");
-//                        System.out.println("Enter age in numbers!");
-                        contact.setAge(Integer.parseInt(bufReader.readLine().trim()));
+                        enterAgeInNumbers("Enter new age:", contact, bufReader);
                         contact.setUpdateDate(LocalDateTime.now());
-                        break;
                     }
                     case Constants.SELECT_PHONE_CONTACT: {
-                        System.out.println("Enter new number phone:");
-                        contact.setPhoneNumber(Integer.parseInt(bufReader.readLine().trim()));
+                        enterPhoneInNumbers("Enter new number phone:", contact, bufReader);
                         contact.setUpdateDate(LocalDateTime.now());
                         break;
                     }
                     case Constants.SELECT_STATUS_CONTACT: {
-                        System.out.println("Is contact married(y/n)?");
-                        if (bufReader.readLine().trim().equalsIgnoreCase("y")) {
-                            contact.setMarried(true);
-                        } else {
-                            contact.setMarried(false);
-                        }
+                        setMarriedStatus(contact, bufReader);
                         contact.setUpdateDate(LocalDateTime.now());
                         break;
                     }
                     case Constants.EXIT: {
-//                            System.out.println(contactDao.updateContact(contact)); Почему так не срабатывает???
                         System.out.println(contact);
                         contactDao.updateContact(contact);
                         System.out.println("Update is done.");
@@ -145,11 +126,11 @@ public class ContactServiceImpl implements ContactService {
                 if (contactDao.removeContact(id, bufReader)) {
                     return true;
                 } else {
-                    System.out.println("You entered wrong ID number.");
+                    System.out.println("You enter wrong ID number.");
                     return false;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("You enter wrong ID.");
+                System.out.println("Only numbers are required.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -164,8 +145,8 @@ public class ContactServiceImpl implements ContactService {
             int number = 0;
             try {
                 number = Integer.parseInt(bufReader.readLine().trim());
-            } catch (IOException e) {
-                System.out.println("Not number");
+            } catch (NumberFormatException | IOException e) {
+                System.out.println("Only numbers are required.");
             }
             if (number == 0) {
                 return;
@@ -183,7 +164,7 @@ public class ContactServiceImpl implements ContactService {
             try {
                 id = Integer.parseInt(bufReader.readLine().trim());
             } catch (IOException e) {
-                System.out.println("Not number");
+                System.out.println("Only numbers are required.");
             }
             Contact contact = contactDao.findById(id);
             System.out.println(contact);
@@ -230,6 +211,46 @@ public class ContactServiceImpl implements ContactService {
         System.out.println("6. Martial status");
         System.out.println("7. Data of create");
         System.out.println("8. Data of update");
+    }
+
+    private void enterAgeInNumbers(String string, Contact contact, BufferedReader bufReader) {
+        while (true) {
+            System.out.println(string);
+            try {
+                contact.setAge(Integer.parseInt(bufReader.readLine().trim()));
+                break;
+            } catch (NumberFormatException | IOException e) {
+                System.out.println("Only numbers are required.");
+            }
+        }
+    }
+
+    private void enterPhoneInNumbers(String string, Contact contact, BufferedReader bufReader) {
+        while (true) {
+            System.out.println(string);
+            try {
+                contact.setPhoneNumber(Integer.parseInt(bufReader.readLine().trim()));
+                break;
+            } catch (NumberFormatException | IOException e) {
+                System.out.println("Only numbers are required.");
+            }
+        }
+    }
+
+    private void setMarriedStatus(Contact contact, BufferedReader bufReader) throws IOException {
+        while (true) {
+            System.out.println("Is contact married(y/n)?");
+            String str = bufReader.readLine();
+            if (str.trim().equalsIgnoreCase("y")) {
+                contact.setMarried(true);
+                break;
+            } else if (str.trim().equalsIgnoreCase("n")) {
+                contact.setMarried(false);
+                break;
+            } else {
+                System.out.println("Only 'y' or 'n' please.");
+            }
+        }
     }
 
 }

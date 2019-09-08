@@ -24,7 +24,7 @@ public class MyAddressBookException extends Exception {
             }
 
     public MyAddressBookException(Contact contact) {
-        System.out.println("Contact is present with ID " + contact);
+        System.out.println("Contact is present with ID " + contact.getId());
     }
 
     public ResponseCode getCode() {
