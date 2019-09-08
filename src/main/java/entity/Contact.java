@@ -87,8 +87,6 @@ public class Contact implements Comparable{
     }
 
     public void setCreateDate(LocalDateTime createDate) {
-//        String formattedDateTime = createDate.format(formatter);
-//        this.createDate = LocalDateTime.parse(formattedDateTime, formatter);
         this.createDate = createDate;
     }
 
@@ -97,8 +95,6 @@ public class Contact implements Comparable{
     }
 
     public void setUpdateDate(LocalDateTime updateDate) {
-//        String formattedDateTime = this.updateDate.format(formatter);
-//        this.updateDate = LocalDateTime.parse(formattedDateTime, formatter);
 
         this.updateDate = updateDate;
     }

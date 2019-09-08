@@ -4,7 +4,6 @@ import entity.Contact;
 import exceptions.MyAddressBookException;
 
 import java.io.BufferedReader;
-import java.util.Scanner;
 
 public interface ContactDao {
 

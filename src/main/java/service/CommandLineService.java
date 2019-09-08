@@ -12,7 +12,7 @@ public interface CommandLineService {
     static void run(BufferedReader bufReader, ContactService service) throws IOException {
         boolean exit = true;
         do {
-            System.out.println("\nEnter number of operation (0-6 or 9 fo test):");
+            System.out.println("\nEnter number of operation (0-6 or 9 foк test):");
             showMenu();
             try {
                 int inputInt = Integer.parseInt(bufReader.readLine().trim());
