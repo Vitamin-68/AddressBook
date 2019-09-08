@@ -118,6 +118,9 @@ public class ContactDaoImpl implements ContactDao {
                     System.out.println("Contact with ID = " + id + " deleted successfully.");
                 } else System.out.println("Delete failed");
                 return result;
+            } else {
+                System.out.println("Delete canceled.");
+                return true;
             }
         } catch (MyAddressBookException e) {
             System.out.println(e.getMessage());

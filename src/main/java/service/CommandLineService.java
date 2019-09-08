@@ -10,7 +10,7 @@ import java.io.IOException;
 public interface CommandLineService {
 
     static void run(BufferedReader bufReader, ContactService service) throws IOException {
-        boolean exit = true;
+        boolean exit = false;
         do {
             System.out.println("\nEnter number of operation (0-6 or 9 foк test):");
             showMenu();
@@ -47,7 +47,8 @@ public interface CommandLineService {
                         }
                         case Constants.EXIT: {
                             System.out.println("Thank you that use our app. Good bye.");
-                            exit = false;
+                            bufReader.close();
+                            exit = true;
                             break;
                         }
                         default: {
@@ -62,7 +63,7 @@ public interface CommandLineService {
                 System.out.println(e.getMessage());
             }
 
-        } while (exit);
+        } while (!exit);
 
     }
 
