@@ -13,12 +13,23 @@ import java.util.stream.Collectors;
 
 import static exceptions.MyAddressBookException.NOT_FOUND_MESSAGE;
 
+/**
+ * CRUD contact's data to/from DB.
+ * Process request from ContactServiceImpl and return data back.
+ * @see dao.ContactDao
+ * @author Vitamin-68
+ */
 public class ContactDaoImpl implements ContactDao {
 
     private static int generator = 0;
 
     private static Set<Contact> contactTreeSet = new TreeSet<>(Comparator.comparing(Contact::getId));
 
+    /**
+     * Create new contact/
+     * @param newContact - a new contact
+     * @return created contact/
+     */
     @Override
     public Contact createContact(Contact newContact) {
 
@@ -29,6 +40,11 @@ public class ContactDaoImpl implements ContactDao {
         return newContact;
     }
 
+    /** Seek contact in the DB with his ID
+     * @param id  - contact's ID for seek in DB
+     * @return found contact from the DB
+     * @throws MyAddressBookException if contact not found
+     */
     @Override
     public Contact findById(int id) throws MyAddressBookException {
 
@@ -40,6 +56,12 @@ public class ContactDaoImpl implements ContactDao {
                         "Contact with ID = " + id + " not exist"));
     }
 
+    /**
+     * Seec contact in the DB with his name
+     * @param name  - contact's name for seek in DB
+     * @returnfound contact from the DB
+     * @throws MyAddressBookException if contact not found
+     */
     public Contact findByName(String name) throws MyAddressBookException {
 
         return contactTreeSet
@@ -49,6 +71,11 @@ public class ContactDaoImpl implements ContactDao {
                 .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND, NOT_FOUND_MESSAGE));
     }
 
+    /**
+     * Update DB with input contact
+     * @param contact  contact for update to DB of contacts
+     * @return contact
+     */
     @Override
     public Contact updateContact(Contact contact) {
 
@@ -63,14 +90,23 @@ public class ContactDaoImpl implements ContactDao {
 //                })
 //                .collect(Collectors.toCollection(TreeSet::new));
 
-        contactTreeSet
+        contactTreeSet = contactTreeSet
                 .stream()
-                .filter(updatedContact -> Objects.equals(updatedContact.getId(), contact.getId()))
-                .peek(updatedContact -> copyContact(contact, updatedContact))
-                .collect(Collectors.toCollection(TreeSet::new));
+                .peek(updatedContact -> {
+                    if (Objects.equals(updatedContact.getId(), contact.getId())) {
+                            copyContact(contact, updatedContact);
+                }
+                })
+                .collect(Collectors.toSet());
         return contact;
     }
 
+    /**
+     * seek $ delete contact use his ID
+     * @param id  - ID of contact fo delete
+     * @param bufReader - a BufferedReader
+     * @return
+     */
     @Override
     public boolean removeContact(int id, BufferedReader bufReader) {
         try {
@@ -92,6 +128,10 @@ public class ContactDaoImpl implements ContactDao {
         return false;
     }
 
+    /**
+     * Sort & output to screen all contacts
+     * @param number -  field number for sort
+     */
     @Override
     public void showAllContacts(int number) {
         Comparator<Contact> comparator;
@@ -133,6 +173,10 @@ public class ContactDaoImpl implements ContactDao {
     }
 
 
+    /**
+     * Output to screen all data of one contact
+     * @param contact
+     */
     public void showOneContact(Contact contact) {
         System.out.println("1. ID: " + contact.getId());
         System.out.println("2. Name: " + contact.getName());
@@ -144,17 +188,23 @@ public class ContactDaoImpl implements ContactDao {
         System.out.println("8. Data of update: " + contact.getUpdateDate() + "\n");
     }
 
+    /**
+     * Copy all fields one contact to other contact
+     * @param copyFromContact  input contact
+     * @param copyToContact output contact
+     * @return copy of contact to super
+     */
     @Override
-    public boolean copyContact(Contact contactCarrier, Contact contactTarget) {
-        if (contactCarrier != null && contactTarget != null && !contactCarrier.equals(contactTarget)) {
-            contactTarget.setId(contactCarrier.getId());
-            contactTarget.setName(contactCarrier.getName());
-            contactTarget.setLastName(contactCarrier.getLastName());
-            contactTarget.setAge(contactCarrier.getAge());
-            contactTarget.setPhoneNumber(contactCarrier.getPhoneNumber());
-            contactTarget.setMarried(contactCarrier.isMarried());
-            contactTarget.setCreateDate(contactCarrier.getCreateDate());
-            contactTarget.setUpdateDate(contactCarrier.getUpdateDate());
+    public boolean copyContact(Contact copyFromContact, Contact copyToContact) {
+        if (copyFromContact != null && copyToContact != null && !copyFromContact.equals(copyToContact)) {
+            copyToContact.setId(copyFromContact.getId());
+            copyToContact.setName(copyFromContact.getName());
+            copyToContact.setLastName(copyFromContact.getLastName());
+            copyToContact.setAge(copyFromContact.getAge());
+            copyToContact.setPhoneNumber(copyFromContact.getPhoneNumber());
+            copyToContact.setMarried(copyFromContact.isMarried());
+            copyToContact.setCreateDate(copyFromContact.getCreateDate());
+            copyToContact.setUpdateDate(copyFromContact.getUpdateDate());
             return true;
         } else
             return false;
