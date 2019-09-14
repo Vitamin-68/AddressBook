@@ -20,5 +20,14 @@ public interface ContactService {
 
     Contact findByName(BufferedReader bufferedReader) throws MyAddressBookException, IOException;
 
+    void saveAllContactsToTxtFile() throws IOException;
+
+    void loadAllContactsFromTxtFile(BufferedReader bufReader);
+
+    void saveAllContactsToDatFile() throws IOException;
+
+    void  loadAllContactsFromDatFile();
+
     void test();
+
 }

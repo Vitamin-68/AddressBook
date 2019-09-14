@@ -3,11 +3,12 @@ package dao.impl;
 import constants.Constants;
 import constants.ResponseCode;
 import dao.ContactDao;
+import dao.ContactDaoFileIo;
 import entity.Contact;
 import exceptions.MyAddressBookException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -16,20 +17,17 @@ import static exceptions.MyAddressBookException.NOT_FOUND_MESSAGE;
 /**
  * CRUD contact's data to/from DB.
  * Process request from ContactServiceImpl and return data back.
- * @see dao.ContactDao
+ *
  * @author Vitamin-68
+ * @see dao.ContactDao
  */
-public class ContactDaoImpl implements ContactDao {
+public class ContactDaoImpl implements ContactDao, ContactDaoFileIo {
 
     private static int generator = 0;
 
     private static Set<Contact> contactTreeSet = new TreeSet<>(Comparator.comparing(Contact::getId));
 
-    /**
-     * Create new contact/
-     * @param newContact - a new contact
-     * @return created contact/
-     */
+
     @Override
     public Contact createContact(Contact newContact) {
 
@@ -40,11 +38,7 @@ public class ContactDaoImpl implements ContactDao {
         return newContact;
     }
 
-    /** Seek contact in the DB with his ID
-     * @param id  - contact's ID for seek in DB
-     * @return found contact from the DB
-     * @throws MyAddressBookException if contact not found
-     */
+
     @Override
     public Contact findById(int id) throws MyAddressBookException {
 
@@ -56,12 +50,7 @@ public class ContactDaoImpl implements ContactDao {
                         "Contact with ID = " + id + " not exist"));
     }
 
-    /**
-     * Seec contact in the DB with his name
-     * @param name  - contact's name for seek in DB
-     * @returnfound contact from the DB
-     * @throws MyAddressBookException if contact not found
-     */
+
     public Contact findByName(String name) throws MyAddressBookException {
 
         return contactTreeSet
@@ -71,11 +60,7 @@ public class ContactDaoImpl implements ContactDao {
                 .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND, NOT_FOUND_MESSAGE));
     }
 
-    /**
-     * Update DB with input contact
-     * @param contact  contact for update to DB of contacts
-     * @return contact
-     */
+
     @Override
     public Contact updateContact(Contact contact) {
 
@@ -94,19 +79,14 @@ public class ContactDaoImpl implements ContactDao {
                 .stream()
                 .peek(updatedContact -> {
                     if (Objects.equals(updatedContact.getId(), contact.getId())) {
-                            copyContact(contact, updatedContact);
-                }
+                        copyContact(contact, updatedContact);
+                    }
                 })
                 .collect(Collectors.toSet());
         return contact;
     }
 
-    /**
-     * seek $ delete contact use his ID
-     * @param id  - ID of contact fo delete
-     * @param bufReader - a BufferedReader
-     * @return
-     */
+
     @Override
     public boolean removeContact(int id, BufferedReader bufReader) {
         try {
@@ -131,10 +111,7 @@ public class ContactDaoImpl implements ContactDao {
         return false;
     }
 
-    /**
-     * Sort & output to screen all contacts
-     * @param number -  field number for sort
-     */
+
     @Override
     public void showAllContacts(int number) {
         Comparator<Contact> comparator;
@@ -176,10 +153,6 @@ public class ContactDaoImpl implements ContactDao {
     }
 
 
-    /**
-     * Output to screen all data of one contact
-     * @param contact
-     */
     public void showOneContact(Contact contact) {
         System.out.println("1. ID: " + contact.getId());
         System.out.println("2. Name: " + contact.getName());
@@ -191,12 +164,7 @@ public class ContactDaoImpl implements ContactDao {
         System.out.println("8. Data of update: " + contact.getUpdateDate() + "\n");
     }
 
-    /**
-     * Copy all fields one contact to other contact
-     * @param copyFromContact  input contact
-     * @param copyToContact output contact
-     * @return copy of contact to super
-     */
+
     @Override
     public boolean copyContact(Contact copyFromContact, Contact copyToContact) {
         if (copyFromContact != null && copyToContact != null && !copyFromContact.equals(copyToContact)) {
@@ -213,6 +181,94 @@ public class ContactDaoImpl implements ContactDao {
             return false;
     }
 
+    @Override
+    public void saveAllContactsToTxtFile() throws IOException {
+        FileWriter writer = new FileWriter(new File(Constants.TXT_LIST_PATH));
+        for (Contact contact : contactTreeSet) {
+            writer.write(Constants.ID + contact.getId() + Constants.WORD_SEPARATOR +
+                    Constants.NAME + contact.getName() + Constants.WORD_SEPARATOR +
+                    Constants.LAST_NAME + contact.getLastName() + Constants.WORD_SEPARATOR +
+                    Constants.AGE + contact.getAge() + Constants.WORD_SEPARATOR +
+                    Constants.MARRIED + contact.isMarried() + Constants.WORD_SEPARATOR +
+                    Constants.PHONE_NUMBER + contact.getPhoneNumber() + Constants.WORD_SEPARATOR +
+                    Constants.CREATE_DATE + contact.getCreateDate() + Constants.WORD_SEPARATOR +
+                    Constants.UPDATE_DATE + contact.getUpdateDate() + Constants.WORD_SEPARATOR +
+                    Constants.LINE_SEPARATOR);
+        }
+        writer.close();
+        System.out.println("All contacts saved to \"" + Constants.TXT_LIST_PATH + "\".");
+        return;
+    }
+
+    @Override
+    public Set<Contact> loadAllContactsFromTxtFile(BufferedReader bufReader) { //} throws FileNotFoundException {
+//        File file = new File(Constants.TXT_LIST_PATH);
+//        if (file.exists()) {
+        try {
+            bufReader = new BufferedReader(new FileReader(Constants.TXT_LIST_PATH));
+
+            bufReader.lines().forEach((String str) -> {
+                Contact contact = new Contact();
+                String[] parameters = str.split(Constants.WORD_SEPARATOR);
+                for (String parameter : parameters) {
+                    if (parameter.contains(Constants.ID)) {
+                        contact.setId(Integer.parseInt(parameter.split(":")[1].trim()));
+                    } else if (parameter.contains(Constants.LAST_NAME)) {
+                        contact.setLastName(parameter.split(":")[1].trim());
+                    } else if (parameter.contains(Constants.NAME)) {
+                        contact.setName(parameter.split(":")[1].trim());
+                    } else if (parameter.contains(Constants.AGE)) {
+                        contact.setAge(Integer.parseInt(parameter.split(":")[1].trim()));
+                    } else if (parameter.contains(Constants.MARRIED)) {
+                        contact.setMarried(Boolean.parseBoolean(parameter.split(":")[1].trim()));
+                    } else if (parameter.contains(Constants.PHONE_NUMBER)) {
+                        contact.setPhoneNumber(Integer.parseInt(parameter.split(":")[1].trim()));
+                    }else if (parameter.contains(Constants.CREATE_DATE)) {
+                        contact.setCreateDate(LocalDateTime.parse((parameter.split(":")[1] +
+                                ":" + parameter.split(":")[2] + ":" + parameter.split(":")[3]).trim()));
+                    } else if (parameter.contains(Constants.UPDATE_DATE)) {
+                        contact.setUpdateDate(LocalDateTime.parse((parameter.split(":")[1] +
+                                ":" + parameter.split(":")[2] + ":" + parameter.split(":")[3]).trim()));
+                    }
+                    contactTreeSet.add(contact);
+                }
+            });
+            System.out.println("All contacts was restored.");
+            return contactTreeSet;
+        } catch (FileNotFoundException e) {
+            System.out.println("Error!\nFile \"" + Constants.TXT_LIST_PATH + "\" not exist.");
+            return contactTreeSet;
+        }//        } else {
+//            System.out.println("Error!\nFile \"" + file + "\" not exist.");
+//            return contactTreeSet;
+//        }
+    }
+
+    @Override
+    public void saveAllContactsToDatFile() throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream(Constants.DAT_LIST_PATH);
+        ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
+        outputStream.writeObject(contactTreeSet);
+        outputStream.close();
+        System.out.println("All contacts saved to \"" + Constants.DAT_LIST_PATH + "\".");
+        return;
+    }
+
+    @Override
+    public Set<Contact> loadAllContactsFromDatFile() {
+        try {
+            FileInputStream fileInputStream = new FileInputStream(Constants.DAT_LIST_PATH);
+            ObjectInputStream inputStream1 = new ObjectInputStream(fileInputStream);
+            contactTreeSet = (Set<Contact>) inputStream1.readObject();
+            fileInputStream.close();
+            inputStream1.close();
+            System.out.println("All contacts are restored.");
+            return contactTreeSet;
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error!\nFile \"" + Constants.TXT_LIST_PATH + "\" not exist.");
+        }
+        return contactTreeSet;
+    }
 //    private void searchSameContact(Contact contact) throws MyAddressBookException {
 //        Optional<Contact> sameContactOpt = contactTreeSet.stream()
 //                .filter(sameContact -> sameContact

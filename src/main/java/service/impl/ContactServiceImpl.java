@@ -2,7 +2,6 @@ package service.impl;
 
 import constants.Constants;
 import constants.ResponseCode;
-import dao.ContactDao;
 import dao.impl.ContactDaoImpl;
 import entity.Contact;
 import exceptions.MyAddressBookException;
@@ -14,11 +13,9 @@ import java.time.LocalDateTime;
 
 public class ContactServiceImpl implements ContactService {
 
-    private static final ContactDao contactDao = new ContactDaoImpl();
-
+    private static final ContactDaoImpl contactDao = new ContactDaoImpl();
 
     public ContactServiceImpl(ContactDaoImpl contactDao) {
-
     }
 
     @Override
@@ -253,4 +250,23 @@ public class ContactServiceImpl implements ContactService {
         }
     }
 
+    @Override
+    public void saveAllContactsToTxtFile() throws IOException {
+        contactDao.saveAllContactsToTxtFile();
+    }
+
+    @Override
+    public void loadAllContactsFromTxtFile(BufferedReader bufReader) {
+        contactDao.loadAllContactsFromTxtFile(bufReader);
+    }
+
+    @Override
+    public void saveAllContactsToDatFile() throws IOException {
+        contactDao.saveAllContactsToDatFile();
+    }
+
+    @Override
+    public void loadAllContactsFromDatFile() {
+        contactDao.loadAllContactsFromDatFile();
+    }
 }

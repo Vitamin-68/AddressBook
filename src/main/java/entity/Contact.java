@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 
-public class Contact implements Comparable{
+public class Contact implements Comparable<Contact>{
     private int id;
     private String name;
     private String lastName;
@@ -132,8 +132,10 @@ public class Contact implements Comparable{
                 ",  Update Date=" + updateDate.format(formatter);
     }
 
+
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(Contact o) {
+        //todo make this metod late
         return 0;
     }
 }
