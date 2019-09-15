@@ -197,13 +197,10 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIo {
         }
         writer.close();
         System.out.println("All contacts saved to \"" + Constants.TXT_LIST_PATH + "\".");
-        return;
     }
 
     @Override
-    public Set<Contact> loadAllContactsFromTxtFile(BufferedReader bufReader) { //} throws FileNotFoundException {
-//        File file = new File(Constants.TXT_LIST_PATH);
-//        if (file.exists()) {
+    public Set<Contact> loadAllContactsFromTxtFile(BufferedReader bufReader) {
         try {
             bufReader = new BufferedReader(new FileReader(Constants.TXT_LIST_PATH));
 
@@ -223,7 +220,7 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIo {
                         contact.setMarried(Boolean.parseBoolean(parameter.split(":")[1].trim()));
                     } else if (parameter.contains(Constants.PHONE_NUMBER)) {
                         contact.setPhoneNumber(Integer.parseInt(parameter.split(":")[1].trim()));
-                    }else if (parameter.contains(Constants.CREATE_DATE)) {
+                    } else if (parameter.contains(Constants.CREATE_DATE)) {
                         contact.setCreateDate(LocalDateTime.parse((parameter.split(":")[1] +
                                 ":" + parameter.split(":")[2] + ":" + parameter.split(":")[3]).trim()));
                     } else if (parameter.contains(Constants.UPDATE_DATE)) {
@@ -233,25 +230,33 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIo {
                     contactTreeSet.add(contact);
                 }
             });
-            System.out.println("All contacts was restored.");
+            System.out.println(contactTreeSet.size() + " contacts was loaded.");
             return contactTreeSet;
         } catch (FileNotFoundException e) {
             System.out.println("Error!\nFile \"" + Constants.TXT_LIST_PATH + "\" not exist.");
             return contactTreeSet;
-        }//        } else {
-//            System.out.println("Error!\nFile \"" + file + "\" not exist.");
-//            return contactTreeSet;
-//        }
+        }
     }
 
     @Override
-    public void saveAllContactsToDatFile() throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(Constants.DAT_LIST_PATH);
-        ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
-        outputStream.writeObject(contactTreeSet);
-        outputStream.close();
+    public void saveAllContactsToDatFile() {//} throws IOException {
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(Constants.DAT_LIST_PATH);
+            ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
+//            outputStream.writeObject(contactTreeSet);
+            for (Contact contact : contactTreeSet) {
+                if (contact.getId() == 1) {
+                    System.out.println(contact);
+                    outputStream.writeObject(contact);
+                    break;
+                }
+            }
+            outputStream.close();
+        } catch (IOException e) {
+            System.out.println("e - " + e);
+        }
+
         System.out.println("All contacts saved to \"" + Constants.DAT_LIST_PATH + "\".");
-        return;
     }
 
     @Override

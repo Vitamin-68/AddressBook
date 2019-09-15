@@ -152,6 +152,7 @@ public interface CommandLineService {
                     }
                 }
             } catch (IOException e) {
+                System.out.println(e);
                 System.out.println("Please enter ONLY numbers.");
             }
         } while (!exit);

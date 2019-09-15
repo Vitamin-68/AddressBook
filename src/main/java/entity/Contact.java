@@ -1,11 +1,13 @@
 package entity;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 
-public class Contact implements Comparable<Contact>{
+public class Contact implements Comparable<Contact>, Serializable {
+    private static final long serialVersionUID = 10L;
     private int id;
     private String name;
     private String lastName;
@@ -14,7 +16,7 @@ public class Contact implements Comparable<Contact>{
     private boolean married;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd  hh:mm:ss");
+    private transient DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd  hh:mm:ss");
 
 
     public Contact() {
