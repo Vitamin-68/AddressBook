@@ -8,6 +8,7 @@ import java.util.Objects;
 
 public class Contact implements Comparable<Contact>, Serializable {
     private static final long serialVersionUID = 10L;
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd  hh:mm:ss");
     private int id;
     private String name;
     private String lastName;
@@ -16,7 +17,6 @@ public class Contact implements Comparable<Contact>, Serializable {
     private boolean married;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
-    private transient DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd  hh:mm:ss");
 
 
     public Contact() {
@@ -96,9 +96,7 @@ public class Contact implements Comparable<Contact>, Serializable {
         return updateDate;
     }
 
-    public void setUpdateDate(LocalDateTime updateDate) {
-
-        this.updateDate = updateDate;
+    public void setUpdateDate(LocalDateTime updateDate) { this.updateDate = updateDate;
     }
 
     @Override
@@ -137,7 +135,6 @@ public class Contact implements Comparable<Contact>, Serializable {
 
     @Override
     public int compareTo(Contact o) {
-        //todo make this metod late
-        return 0;
+        return Integer.compare(id, o.getId());
     }
 }

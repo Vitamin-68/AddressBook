@@ -65,24 +65,24 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIo {
     public Contact updateContact(Contact contact) {
 
         // don't working, write on lesson
-//        contactTreeSet = contactTreeSet
-//                .stream()
-////                .filter(updatedContact -> Objects.equals(updatedContact.getId(), contact.getId()))
-//                .peek(updatedContact -> {
-//                    if (Objects.equals(updatedContact.getId(), contact.getId())) {
-//                        copyContact(contact, updatedContact);
-//                    }
-//                })
-//                .collect(Collectors.toCollection(TreeSet::new));
-
         contactTreeSet = contactTreeSet
                 .stream()
+//                .filter(updatedContact -> Objects.equals(updatedContact.getId(), contact.getId()))
                 .peek(updatedContact -> {
                     if (Objects.equals(updatedContact.getId(), contact.getId())) {
                         copyContact(contact, updatedContact);
                     }
                 })
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
+
+//        contactTreeSet = contactTreeSet
+//                .stream()
+//                .peek(updatedContact -> {
+//                    if (Objects.equals(updatedContact.getId(), contact.getId())) {
+//                        copyContact(contact, updatedContact);
+//                    }
+//                })
+//                .collect(Collectors.toSet());
         return contact;
     }
 
@@ -228,6 +228,9 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIo {
                                 ":" + parameter.split(":")[2] + ":" + parameter.split(":")[3]).trim()));
                     }
                     contactTreeSet.add(contact);
+                    if (generator < contact.getId()) {
+                        generator = contact.getId();
+                    }
                 }
             });
             System.out.println(contactTreeSet.size() + " contacts was loaded.");
@@ -239,35 +242,36 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIo {
     }
 
     @Override
-    public void saveAllContactsToDatFile() {//} throws IOException {
+    public void saveAllContactsToDatFile() {
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(Constants.DAT_LIST_PATH);
             ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
-//            outputStream.writeObject(contactTreeSet);
-            for (Contact contact : contactTreeSet) {
-                if (contact.getId() == 1) {
-                    System.out.println(contact);
-                    outputStream.writeObject(contact);
-                    break;
-                }
-            }
+            outputStream.writeObject(contactTreeSet.toArray());
+//                    outputStream.writeObject(contactTreeSet);
             outputStream.close();
         } catch (IOException e) {
-            System.out.println("e - " + e);
+            System.out.println(e);
         }
 
-        System.out.println("All contacts saved to \"" + Constants.DAT_LIST_PATH + "\".");
+        System.out.println(contactTreeSet.size() + " contacts saved to \"" + Constants.DAT_LIST_PATH + "\".");
     }
 
     @Override
     public Set<Contact> loadAllContactsFromDatFile() {
         try {
             FileInputStream fileInputStream = new FileInputStream(Constants.DAT_LIST_PATH);
-            ObjectInputStream inputStream1 = new ObjectInputStream(fileInputStream);
-            contactTreeSet = (Set<Contact>) inputStream1.readObject();
+            ObjectInputStream inputStream = new ObjectInputStream(fileInputStream);
+            Object[] arr = (Object[]) inputStream.readObject();
+            for (Object contact : arr) {
+                contactTreeSet.add((Contact) contact);
+                if (generator < ((Contact) contact).getId()) {
+                    generator = ((Contact) contact).getId();
+                }
+            }
+//            contactTreeSet = (Set<Contact>) inputStream.readObject();
             fileInputStream.close();
-            inputStream1.close();
-            System.out.println("All contacts are restored.");
+            inputStream.close();
+            System.out.println(contactTreeSet.size() + " contacts was loaded.");
             return contactTreeSet;
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error!\nFile \"" + Constants.TXT_LIST_PATH + "\" not exist.");

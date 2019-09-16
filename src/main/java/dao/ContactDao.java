@@ -14,7 +14,7 @@ public interface ContactDao {
     Contact createContact(Contact newContact);
 
     /**
-     * Update DB with input contact
+     * Edit & update contacts from DB
      * @param contact  contact for update to DB of contacts
      * @return contact
      */
