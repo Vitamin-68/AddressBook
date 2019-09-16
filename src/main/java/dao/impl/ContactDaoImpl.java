@@ -6,7 +6,6 @@ import dao.ContactDao;
 import dao.ContactDaoFileIo;
 import entity.Contact;
 import exceptions.MyAddressBookException;
-
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -64,25 +63,14 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIo {
     @Override
     public Contact updateContact(Contact contact) {
 
-        // don't working, write on lesson
         contactTreeSet = contactTreeSet
                 .stream()
-//                .filter(updatedContact -> Objects.equals(updatedContact.getId(), contact.getId()))
                 .peek(updatedContact -> {
                     if (Objects.equals(updatedContact.getId(), contact.getId())) {
                         copyContact(contact, updatedContact);
                     }
                 })
                 .collect(Collectors.toCollection(TreeSet::new));
-
-//        contactTreeSet = contactTreeSet
-//                .stream()
-//                .peek(updatedContact -> {
-//                    if (Objects.equals(updatedContact.getId(), contact.getId())) {
-//                        copyContact(contact, updatedContact);
-//                    }
-//                })
-//                .collect(Collectors.toSet());
         return contact;
     }
 
@@ -196,7 +184,7 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIo {
                     Constants.LINE_SEPARATOR);
         }
         writer.close();
-        System.out.println("All contacts saved to \"" + Constants.TXT_LIST_PATH + "\".");
+        System.out.println(contactTreeSet.size() + " contacts saved to \"" + Constants.TXT_LIST_PATH + "\".");
     }
 
     @Override

@@ -261,7 +261,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public void saveAllContactsToDatFile() throws IOException {
+    public void saveAllContactsToDatFile() {
         contactDao.saveAllContactsToDatFile();
     }
 
