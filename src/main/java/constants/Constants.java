@@ -12,9 +12,13 @@ public final class Constants {
     public static final int UPDATE_CONTACT = 2;
     public static final int DELETE_CONTACT = 3;
     public static final int SHOW_ALL_CONTACT = 4;
-    public static final int SHOW_CONTACT_BY_ID = 5;
-    public static final int SHOW_CONTACT_BY_NAME = 6;
+    public static final int FIND_CONTACT = 5;
+    public static final int SAVE_ALL_CONTACT = 6;
+    public static final int LOAD_ALL_CONTACT = 7;
     public static final int TEST = 9;
+
+    public static final int FIND_BY_ID = 1;
+    public static final int FIND_BY_NAME = 2;
 
     public static final int SORTED_BY_ID = 1;
     public static final int SORTED_BY_NAME = 2;
@@ -42,4 +46,6 @@ public final class Constants {
     public static final String LINE_SEPARATOR = "\n";
     public static final String TXT_LIST_PATH = "Address Book.txt";
     public static final String DAT_LIST_PATH = "Address Book.dat";
+
+
 }

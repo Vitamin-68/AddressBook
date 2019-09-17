@@ -10,8 +10,9 @@ import java.io.IOException;
 public interface CommandLineService {
 
     static void run(BufferedReader bufReader, ContactService service) throws IOException {
+        System.out.println("Welcome to project \"Address Book\" made by Wetal\n");
         try {
-            loadContactFromFile(bufReader, service);
+            loadAllContactFromFile(bufReader, service);
         } catch (MyAddressBookException e) {
             e.printStackTrace();
         }
@@ -38,12 +39,16 @@ public interface CommandLineService {
                         service.showAllContacts(bufReader);
                         break;
                     }
-                    case Constants.SHOW_CONTACT_BY_ID: {
-                        service.findById(bufReader);
+                    case Constants.FIND_CONTACT: {
+                        findOneContact(bufReader, service);
                         break;
                     }
-                    case Constants.SHOW_CONTACT_BY_NAME: {
-                        service.findByName(bufReader);
+                    case Constants.SAVE_ALL_CONTACT: {
+                        saveAllContactToFile(bufReader, service);
+                        break;
+                    }
+                    case Constants.LOAD_ALL_CONTACT: {
+                        loadAllContactFromFile(bufReader, service);
                         break;
                     }
                     case Constants.TEST: {
@@ -51,7 +56,7 @@ public interface CommandLineService {
                         break;
                     }
                     case Constants.EXIT: {
-                        saveAndExit(bufReader, service);
+                        saveAllContactToFile(bufReader, service);
                         bufReader.close();
                         System.out.println("Thank you that use our app. Good bye.");
                         exit = true;
@@ -74,18 +79,18 @@ public interface CommandLineService {
     }
 
     static void showMenu() {
-        System.out.println("1. Add contact");
-        System.out.println("2. Update contact");
-        System.out.println("3. Delete contact");
-        System.out.println("4. Show all contacts");
-        System.out.println("5. Show contact by id");
-        System.out.println("6. Show contact by name");
-        System.out.println("9. Add 4 contacts for test");
+        System.out.println("1. Add contact.");
+        System.out.println("2. Update contact.");
+        System.out.println("3. Delete contact.");
+        System.out.println("4. Show all contacts.");
+        System.out.println("5. Show contact.");
+        System.out.println("6. Save all contact to file.");
+        System.out.println("7. Load all contact from file.");
+        System.out.println("9. Add 4 contacts for test.");
         System.out.println("0. Exit");
     }
 
-    static void loadContactFromFile(BufferedReader bufReader, ContactService service) throws MyAddressBookException {
-        System.out.println("Welcome to project \"Address Book\" made by Wetal\n");
+    static void loadAllContactFromFile(BufferedReader bufReader, ContactService service) throws MyAddressBookException {
         System.out.println("Do you want load all contacts from file?");
         System.out.println("1. Load from file \"" + Constants.TXT_LIST_PATH + "\".");
         System.out.println("2. Load from file \"" + Constants.DAT_LIST_PATH + "\".");
@@ -122,7 +127,7 @@ public interface CommandLineService {
 
 
 
-    static void saveAndExit(BufferedReader bufReader, ContactService service) throws MyAddressBookException {
+    static void saveAllContactToFile(BufferedReader bufReader, ContactService service) throws MyAddressBookException {
         System.out.println("Do you want save all contacts to file?");
         System.out.println("1. Save to file \"" + Constants.TXT_LIST_PATH + "\" and Exit.");
         System.out.println("2. Save to file \"" + Constants.DAT_LIST_PATH + "\" and Exit.");
@@ -152,6 +157,42 @@ public interface CommandLineService {
                     }
                 }
             } catch (IOException e) {
+                System.out.println(e);
+                System.out.println("Please enter ONLY numbers.");
+            }
+        } while (!exit);
+    }
+
+    static void findOneContact(BufferedReader bufReader, ContactService service) {
+        System.out.println("Find contact by:");
+        System.out.println("1. ID.");
+        System.out.println("2. Name.");
+        System.out.println("0. Exit to previous menu.");
+        boolean exit = false;
+        do {
+            try {
+                int numberOfChoice = Integer.parseInt(bufReader.readLine().trim());
+                switch (numberOfChoice) {
+                    case Constants.FIND_BY_ID: {
+                        service.findById(bufReader);
+                        exit = true;
+                        break;
+                    }
+                    case Constants.FIND_BY_NAME: {
+                        service.findByName(bufReader);
+                        exit = true;
+                        break;
+                    }
+                    case Constants.EXIT: {
+                        exit = true;
+                        break;
+                    }
+                    default: {
+                        throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
+                                "You enter wrong num of operation");
+                    }
+                }
+            } catch (IOException | MyAddressBookException e) {
                 System.out.println(e);
                 System.out.println("Please enter ONLY numbers.");
             }

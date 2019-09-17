@@ -3,7 +3,7 @@ package dao.impl;
 import constants.Constants;
 import constants.ResponseCode;
 import dao.ContactDao;
-import dao.ContactDaoFileIo;
+import dao.ContactDaoFileIO;
 import entity.Contact;
 import exceptions.MyAddressBookException;
 import java.io.*;
@@ -20,7 +20,7 @@ import static exceptions.MyAddressBookException.NOT_FOUND_MESSAGE;
  * @author Vitamin-68
  * @see dao.ContactDao
  */
-public class ContactDaoImpl implements ContactDao, ContactDaoFileIo {
+public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
 
     private static int generator = 0;
 

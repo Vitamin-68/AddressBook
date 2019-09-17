@@ -11,7 +11,7 @@ import java.util.Set;
  * Interface for ContactDaoImpl
  * Load & write DB of contact to file
  */
-public interface ContactDaoFileIo {
+public interface ContactDaoFileIO {
 
     void saveAllContactsToTxtFile() throws IOException;
 
