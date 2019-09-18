@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static exceptions.MyAddressBookException.NOT_FOUND_MESSAGE;
 
 /**
  * CRUD contact's data to/from DB.
@@ -29,11 +28,15 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
 
     @Override
     public Contact createContact(Contact newContact) {
-
-        newContact.setId(++generator);
-        contactTreeSet.add(newContact);
-        System.out.println("New contact added successfully:");
-        System.out.println(newContact);
+        try {
+            searchSameContact(newContact);
+            newContact.setId(++generator);
+            contactTreeSet.add(newContact);
+            System.out.println("New contact added successfully:");
+            System.out.println(newContact);
+        } catch (MyAddressBookException e) {
+            System.out.println(e.getMessage());
+        }
         return newContact;
     }
 
@@ -46,7 +49,7 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
                 .filter(contact -> contact.getId() == id)
                 .findFirst()
                 .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND,
-                        "Contact with ID = " + id + " not exist"));
+                        "Contact with ID = " + id + " not exist.\n"));
     }
 
 
@@ -56,7 +59,8 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
                 .stream()
                 .filter(contact -> contact.getName().equalsIgnoreCase(name))
                 .findFirst()
-                .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND, NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND,
+                        "Contact with Name = " + name + " not exist.\n"));
     }
 
 
@@ -266,17 +270,19 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
         }
         return contactTreeSet;
     }
-//    private void searchSameContact(Contact contact) throws MyAddressBookException {
-//        Optional<Contact> sameContactOpt = contactTreeSet.stream()
+    private void searchSameContact(Contact contact) throws MyAddressBookException {
+        Optional<Contact> sameContactOpt = contactTreeSet.stream()
+                .filter(sameContact -> Objects.equals(sameContact.getPhoneNumber(),
+                        contact.getPhoneNumber()))
 //                .filter(sameContact -> sameContact
 //                        .getPhoneNumber()
 //                        .equals(contact.getPhoneNumber()))
-//                .findFirst();
-//        if (sameContactOpt.isPresent()) {
-//            throw new MyAddressBookException(ResponseCode.OBJECT_EXIST,
-//                    "Same contact is exist with id" + sameContactOpt.get().getId());
-//        }
-//    }
+                .findFirst();
+        if (sameContactOpt.isPresent()) {
+            throw new MyAddressBookException(ResponseCode.OBJECT_EXIST,
+                    "Same contact is exist with ID = " + sameContactOpt.get().getId());
+        }
+    }
 //
 //    private void searchSameContact2(Contact contact) {
 //        contactTreeSet.stream()

@@ -11,11 +11,7 @@ public interface CommandLineService {
 
     static void run(BufferedReader bufReader, ContactService service) throws IOException {
         System.out.println("Welcome to project \"Address Book\" made by Wetal\n");
-        try {
-            loadAllContactFromFile(bufReader, service);
-        } catch (MyAddressBookException e) {
-            e.printStackTrace();
-        }
+        loadAllContactFromFile(bufReader, service);
         boolean exit = false;
         do {
             System.out.println("\nEnter number of operation (0-6 or 9 for test):");
@@ -64,7 +60,7 @@ public interface CommandLineService {
                     }
                     default: {
                         throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
-                                "You enter wrong num of operation");
+                                "You enter wrong number of operation");
                     }
                 }
 
@@ -90,7 +86,7 @@ public interface CommandLineService {
         System.out.println("0. Exit");
     }
 
-    static void loadAllContactFromFile(BufferedReader bufReader, ContactService service) throws MyAddressBookException {
+    static void loadAllContactFromFile(BufferedReader bufReader, ContactService service) throws IOException {
         System.out.println("Do you want load all contacts from file?");
         System.out.println("1. Load from file \"" + Constants.TXT_LIST_PATH + "\".");
         System.out.println("2. Load from file \"" + Constants.DAT_LIST_PATH + "\".");
@@ -119,15 +115,17 @@ public interface CommandLineService {
                                 "You enter wrong num of operation");
                     }
                 }
-            } catch (IOException e) {
+            } catch (NumberFormatException e) {
                 System.out.println("Please enter ONLY numbers.");
+            } catch (MyAddressBookException e) {
+                System.out.println(e.getMessage());
             }
         } while (!exit);
     }
 
 
 
-    static void saveAllContactToFile(BufferedReader bufReader, ContactService service) throws MyAddressBookException {
+    static void saveAllContactToFile(BufferedReader bufReader, ContactService service) throws IOException {
         System.out.println("Do you want save all contacts to file?");
         System.out.println("1. Save to file \"" + Constants.TXT_LIST_PATH + "\" and Exit.");
         System.out.println("2. Save to file \"" + Constants.DAT_LIST_PATH + "\" and Exit.");
@@ -156,20 +154,21 @@ public interface CommandLineService {
                                 "You enter wrong num of operation");
                     }
                 }
-            } catch (IOException e) {
-                System.out.println(e);
+            } catch (NumberFormatException e) {
                 System.out.println("Please enter ONLY numbers.");
+            } catch (MyAddressBookException e) {
+                System.out.println(e.getMessage());
             }
         } while (!exit);
     }
 
-    static void findOneContact(BufferedReader bufReader, ContactService service) {
-        System.out.println("Find contact by:");
-        System.out.println("1. ID.");
-        System.out.println("2. Name.");
-        System.out.println("0. Exit to previous menu.");
+    static void findOneContact(BufferedReader bufReader, ContactService service) throws IOException {
         boolean exit = false;
         do {
+            System.out.println("Find contact by:");
+            System.out.println("1. ID.");
+            System.out.println("2. Name.");
+            System.out.println("0. Exit to previous menu.");
             try {
                 int numberOfChoice = Integer.parseInt(bufReader.readLine().trim());
                 switch (numberOfChoice) {
@@ -192,9 +191,10 @@ public interface CommandLineService {
                                 "You enter wrong num of operation");
                     }
                 }
-            } catch (IOException | MyAddressBookException e) {
-                System.out.println(e);
+            } catch (NumberFormatException e) {
                 System.out.println("Please enter ONLY numbers.");
+            } catch (MyAddressBookException e) {
+                System.out.println(e.getMessage());
             }
         } while (!exit);
     }
