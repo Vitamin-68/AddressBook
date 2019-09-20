@@ -8,6 +8,7 @@ import java.util.Scanner;
 public interface CommandLineService {
 
     static void run(Scanner scanner, ContactService service) {
+        System.out.println("Welcome to project \"Address Book\" based on Array.\nMade by Wetal\n");
         boolean exit = true;
         do {
             System.out.println("Enter number of operation (0-5):");
@@ -47,7 +48,7 @@ public interface CommandLineService {
                     }
 
                 } else {
-                    System.out.println("You entered wrong number");
+                    System.out.println("Please enter only numbers.");
                     scanner.next();
                 }
             } catch (MyAddressBookException e) {

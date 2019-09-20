@@ -3,7 +3,7 @@ package exceptions;
 import constants.ResponseCode;
 
 public class MyAddressBookException extends Exception {
-    public ResponseCode code;
+    private ResponseCode code;
     private String message;
 
     public MyAddressBookException(ResponseCode code) {
@@ -14,11 +14,6 @@ public class MyAddressBookException extends Exception {
         this.code = code;
         this.message = message;
     }
-
-//    public MyAddressBookException() {
-//        this.code = ResponseCode.NOT_FOUND;
-//        this.message = message;
-//            }
 
     public ResponseCode getCode() {
         return code;
