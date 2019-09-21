@@ -30,6 +30,8 @@ public class ContactDaoImpl implements ContactDao {
                     newContact.setId(++generator);
                     contact = newContact;
                     contacts[index] = contact;
+                    System.out.println("Contact created:");
+                    System.out.println(contact);
                     return contact;
                 }
                 index++;
@@ -45,31 +47,28 @@ public class ContactDaoImpl implements ContactDao {
     public Contact findById(int id) {
         for (Contact contact : contacts) {
             if (contact != null && Objects.equals(contact.getId(), id)) {
-                System.out.println("1. ID: " + contact.getId());
-                System.out.println("2. Name: " + contact.getName());
-                System.out.println("3. Last name: " + contact.getLastName());
-                System.out.println("4. Age: " + contact.getAge());
-                System.out.println("5. Phone number: " + contact.getPhoneNumber());
-                System.out.println("6. Martial status: : " + (contact.isMarried() ? "Married" : "No married"));
-                System.out.println("7. Data of create: " + contact.getCreateDate());
-                System.out.println("8. Data of update: " + contact.getUpdateTime());
+                System.out.println(contact);
                 return contact;
             }
         }
-        System.out.println("Contact with ID = " + id + " not found.");
+        System.out.println("Contact with ID = " + id + " not found.\n");
         return new Contact();
     }
 
     @Override
     public Contact updateContact(Contact updatedContact) {
-        int index = 0;
-        for (Contact contact : contacts) {
-            if (Objects.equals(contact.getId(), updatedContact.getId())) {
-                contact = updatedContact;
-                contacts[index] = contact;
-                return contact;
+        for (int i = 0; i < contacts.length; i++) {
+            if (contacts[i] != null && Objects.equals(contacts[i].getId(), updatedContact.getId())) {
+                contacts[i].setName(updatedContact.getName());
+                contacts[i].setLastName(updatedContact.getLastName());
+                contacts[i].setAge(updatedContact.getAge());
+                contacts[i].setPhoneNumber(updatedContact.getPhoneNumber());
+                contacts[i].setMarried(updatedContact.isMarried());
+                contacts[i].setUpdateTime(updatedContact.getUpdateTime());
+                contacts[i].setCreateDate(updatedContact.getCreateDate());
+                System.out.println("Update is done.\n");
+                break;
             }
-            index++;
         }
         return updatedContact;
     }
@@ -80,12 +79,12 @@ public class ContactDaoImpl implements ContactDao {
         for (Contact contact : contacts) {
             if (contact != null && Objects.equals(contact.getId(), id)) {
                 contacts[index] = null;
-                System.out.println("Contact with ID = " + id + " was deleted successfully");
+                System.out.println("Contact with ID = " + id + " was deleted successfully.\n");
                 return true;
             }
             index++;
         }
-        System.out.println("Contact with ID = " + id + " not found.");
+        System.out.println("Contact with ID = " + id + " not found.\n");
         return false;
     }
 

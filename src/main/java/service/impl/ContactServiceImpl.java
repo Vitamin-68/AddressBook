@@ -21,20 +21,11 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public Contact createContact(Scanner scanner) {
         Contact contact = new Contact();
-        System.out.println("Enter name of contact:");
-        contact.setName(scanner.next());
-        System.out.println("Enter last name of contact:");
-        contact.setLastName(scanner.next());
-        System.out.println("Enter age of contact");
-        while (!scanner.hasNextInt()) {
-            System.out.println("Indicate age in numbers!");
-            scanner.next();
-        }
-        contact.setAge(scanner.nextInt());
-        System.out.println("Enter phone number of contact");
-        contact.setPhoneNumber(scanner.next());
-        System.out.println("Is contact married(y/n)?");
-        contact.setMarried(scanner.next().equalsIgnoreCase("y"));
+        contact.setName(onlySymbolsName("Enter name of new contact:", scanner));
+        contact.setLastName(onlySymbolsName("Enter last name of new contact:", scanner));
+        contact.setAge(onlyNumbersString("Enter age of new contact:", scanner));
+        contact.setPhoneNumber(onlyNumbersString("Enter phone number of new contact:", scanner));
+        contact.setMarried(isMarried(scanner));
         contact.setCreateDate(LocalDateTime.now());
         contact.setUpdateTime(LocalDateTime.now());
         return contactDao.createContact(contact);
@@ -42,72 +33,75 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Contact updateContact(Scanner scanner) {
-        Contact contact = this.findById(scanner);
+        Contact contact = findById(scanner);
         boolean exit = true;
-        do {
-            System.out.println("Enter number of field for update (2-6)\n or 0 for Exit:");
-            try {
-                if (scanner.hasNextInt()) {
-                    int numberOfField = scanner.nextInt();
-                    switch (numberOfField) {
-                        case 2: {
-                            System.out.println("Enter new name:");
-                            contact.setName(scanner.next());
-                            contact.setUpdateTime(LocalDateTime.now());
-                            break;
-                        }
-                        case 3: {
-                            System.out.println("Enter new last name:");
-                            contact.setLastName(scanner.next());
-                            contact.setUpdateTime(LocalDateTime.now());
-                            break;
-                        }
-                        case 4: {
-                            System.out.println("Enter new age:");
-                            while (!scanner.hasNextInt()) {
-                                System.out.println("Indicate age in numbers!");
-                                scanner.next();
+        if (contact.getId() != 0) {
+            Contact updatedContact = new Contact();
+            updatedContact.setId(contact.getId());
+            updatedContact.setName(contact.getName());
+            updatedContact.setLastName(contact.getLastName());
+            updatedContact.setAge(contact.getAge());
+            updatedContact.setPhoneNumber(contact.getPhoneNumber());
+            updatedContact.setMarried(contact.isMarried());
+            updatedContact.setUpdateTime(contact.getUpdateTime());
+            updatedContact.setCreateDate(contact.getCreateDate());
+            do {
+                menuUpdateContact();
+                try {
+                    if (scanner.hasNextInt()) {
+                        int numberOfField = scanner.nextInt();
+                        switch (numberOfField) {
+                            case 1: {
+                                updatedContact.setName(onlySymbolsName("Enter new name:", scanner));
+                                updatedContact.setUpdateTime(LocalDateTime.now());
+                                break;
                             }
-                            contact.setAge(scanner.nextInt());
-                            contact.setUpdateTime(LocalDateTime.now());
-                            break;
+                            case 2: {
+                                updatedContact.setLastName(onlySymbolsName("Enter new last name:", scanner));
+                                updatedContact.setUpdateTime(LocalDateTime.now());
+                                break;
+                            }
+                            case 3: {
+                                System.out.println("Enter new age:");
+                                updatedContact.setAge(onlyNumbersString("Enter age of new contact:", scanner));
+                                updatedContact.setUpdateTime(LocalDateTime.now());
+                                break;
+                            }
+                            case 4: {
+                                updatedContact.setPhoneNumber(onlyNumbersString("Enter new number phone:", scanner));
+                                updatedContact.setUpdateTime(LocalDateTime.now());
+                                break;
+                            }
+                            case 5: {
+                                updatedContact.setMarried(isMarried(scanner));
+                                updatedContact.setUpdateTime(LocalDateTime.now());
+                                break;
+                            }
+                            case 0: {
+                                exit = false;
+                                break;
+                            }
+                            default: {
+                                throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
+                                        "You enter wrong number of operation.");
+                            }
                         }
-                        case 5: {
-                            System.out.println("Enter new number phone:");
-                            contact.setPhoneNumber(scanner.next());
-                            contact.setUpdateTime(LocalDateTime.now());
-                            break;
-                        }
-                        case 6: {
-                            System.out.println("Is contact married(y/n)?");
-                            contact.setMarried(scanner.next().equalsIgnoreCase("y"));
-                            contact.setUpdateTime(LocalDateTime.now());
-                            break;
-                        }
-                        case 0: {
-                            System.out.println("Update is done.");
-                            exit = false;
-                            break;
-                        }
-                        default: {
-                            throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
-                                    "You enter wrong number of operation");
-                        }
+                    } else {
+                        System.out.println("Please enter only number.");
+                        scanner.next();
                     }
-                } else {
-                    System.out.println("You entered wrong number");
-                    scanner.next();
+                } catch (MyAddressBookException e) {
+                    System.out.println(e.getMessage());
                 }
-            } catch (MyAddressBookException e) {
-                System.out.println(e.getMessage());
-            }
-        } while (exit);
-        return contactDao.updateContact(contact);
+            } while (exit);
+            return contactDao.updateContact(updatedContact);
+        }
+        return contact;
     }
 
     @Override
     public boolean removeContact(Scanner scanner) {
-        for (; ; ) {
+        while (true) {
             System.out.println("Enter ID for delete:");
             if (scanner.hasNextInt()) {
                 int id = scanner.nextInt();
@@ -127,7 +121,7 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Contact findById(Scanner scanner) {
-        for (; ; ) {
+        while (true) {
             System.out.println("Enter ID of contact:");
             if (scanner.hasNextInt()) {
                 int id = scanner.nextInt();
@@ -139,4 +133,52 @@ public class ContactServiceImpl implements ContactService {
         }
     }
 
+    private void menuUpdateContact() {
+        System.out.println("Enter number of field for update (1-5)\n or 0 for Exit:");
+        System.out.println("1. Name.");
+        System.out.println("2. Last name.");
+        System.out.println("3. Age.");
+        System.out.println("4. Phone number.");
+        System.out.println("5. Martial status.");
+        System.out.println("0. Save contact & Exit.");
+    }
+
+    private String onlySymbolsName(String string, Scanner scanner) {
+        while (true) {
+            System.out.println(string);
+            String str = scanner.next().trim();
+            if (str.chars().allMatch(Character :: isLetter)) {
+                return str;
+            } else {
+                System.out.println("Only letters please.");
+            }
+        }
+    }
+
+    private int onlyNumbersString(String string, Scanner scanner) {
+        while (true) {
+            System.out.println(string);
+            String numner = scanner.next().trim();
+            if (numner.matches("[0-9]+")) {
+                return Integer.parseInt(numner);
+            } else {
+                System.out.println("Only numbers please.");
+            }
+        }
+    }
+
+    private boolean isMarried(Scanner scanner) {
+        while (true) {
+            System.out.println("Is contact married (y/n)?:");
+            String isMarried = scanner.next();
+            if (isMarried.equalsIgnoreCase("y")) {
+                return true;
+            } else if (isMarried.equalsIgnoreCase("n")) {
+                return false;
+            } else {
+                System.out.println("Only \"y\" or \"n\":");
+            }
+        }
+
+    }
 }

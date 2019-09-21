@@ -1,13 +1,14 @@
 package entity;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Contact {
     private int id;
     private String name;
     private String lastName;
     private int age;
-    private String phoneNumber;
+    private int phoneNumber;
     private boolean married;
     private LocalDateTime createDate;
     private LocalDateTime updateTime;
@@ -16,7 +17,7 @@ public class Contact {
     }
 
     public Contact(String name, String lastName,
-                   int age, String phoneNumber,
+                   int age, int phoneNumber,
                    boolean married,
                    LocalDateTime createDate,
                    LocalDateTime updateTime) {
@@ -61,11 +62,11 @@ public class Contact {
         this.age = age;
     }
 
-    public String getPhoneNumber() {
+    public int getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(int phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -97,43 +98,31 @@ public class Contact {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Contact contact = (Contact) o;
-
-        if (id != contact.id) return false;
-        if (age != contact.age) return false;
-        if (married != contact.married) return false;
-        if (name != null ? !name.equals(contact.name) : contact.name != null) return false;
-        if (lastName != null ? !lastName.equals(contact.lastName) : contact.lastName != null) return false;
-        if (phoneNumber != null ? !phoneNumber.equals(contact.phoneNumber) : contact.phoneNumber != null) return false;
-        if (createDate != null ? !createDate.equals(contact.createDate) : contact.createDate != null) return false;
-        return updateTime != null ? updateTime.equals(contact.updateTime) : contact.updateTime == null;
+        return id == contact.id &&
+                age == contact.age &&
+                phoneNumber == contact.phoneNumber &&
+                married == contact.married &&
+                Objects.equals(name, contact.name) &&
+                Objects.equals(lastName, contact.lastName) &&
+                Objects.equals(createDate, contact.createDate) &&
+                Objects.equals(updateTime, contact.updateTime);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-        result = 31 * result + age;
-        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
-        result = 31 * result + (married ? 1 : 0);
-        result = 31 * result + (createDate != null ? createDate.hashCode() : 0);
-        result = 31 * result + (updateTime != null ? updateTime.hashCode() : 0);
-        return result;
+        return Objects.hash(id, name, lastName, age, phoneNumber, married, createDate, updateTime);
     }
 
     @Override
     public String toString() {
-        return "Contact{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", age=" + age +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", married=" + married +
-                ", createDate=" + createDate +
-                ", updateTime=" + updateTime +
-                '}';
+        return "ID=" + id +
+                ", Name='" + name + '\'' +
+                ", LastName='" + lastName + '\'' +
+                ", Age=" + age +
+                ", PhoneNumber='" + phoneNumber + '\'' +
+                ", Status=" + (married ? "Married" : "No married") +
+                ", CreateDate=" + createDate +
+                ", UpdateTime=" + updateTime + "\n";
     }
 }

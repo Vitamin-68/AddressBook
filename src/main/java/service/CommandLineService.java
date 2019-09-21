@@ -7,6 +7,13 @@ import java.util.Scanner;
 
 public interface CommandLineService {
 
+    /**
+     * Start Project. Display start menu.
+     *
+     * @param scanner - usual Java Scanner
+     * @param service - class ContactServiceImpl object
+     * @see ContactService
+     */
     static void run(Scanner scanner, ContactService service) {
         System.out.println("Welcome to project \"Address Book\" based on Array.\nMade by Wetal\n");
         boolean exit = true;
@@ -43,12 +50,12 @@ public interface CommandLineService {
                         }
                         default: {
                             throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
-                                    "You enter wrong num of operation");
+                                    "You enter wrong num of operation.\n");
                         }
                     }
 
                 } else {
-                    System.out.println("Please enter only numbers.");
+                    System.out.println("Please enter only numbers.\n");
                     scanner.next();
                 }
             } catch (MyAddressBookException e) {
