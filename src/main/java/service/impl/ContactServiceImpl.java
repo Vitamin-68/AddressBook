@@ -62,8 +62,7 @@ public class ContactServiceImpl implements ContactService {
                                 break;
                             }
                             case 3: {
-                                System.out.println("Enter new age:");
-                                updatedContact.setAge(onlyNumbersString("Enter age of new contact:", scanner));
+                                updatedContact.setAge(onlyNumbersString("Enter new age:", scanner));
                                 updatedContact.setUpdateTime(LocalDateTime.now());
                                 break;
                             }
