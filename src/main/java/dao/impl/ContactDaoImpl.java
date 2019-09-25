@@ -7,6 +7,7 @@ import dao.ContactDaoFileIO;
 import entity.Contact;
 import exceptions.MyAddressBookException;
 import java.io.*;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -270,6 +271,7 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
         }
         return contactTreeSet;
     }
+
     private void searchSameContact(Contact contact) throws MyAddressBookException {
         Optional<Contact> sameContactOpt = contactTreeSet.stream()
                 .filter(sameContact -> Objects.equals(sameContact.getPhoneNumber(),
@@ -292,4 +294,45 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
 //                .findFirst()
 //                .ifPresent(MyAddressBookException::new);
 //    }
+
+    public void SaveContact(Contact contact) throws MyAddressBookException {
+        try (Connection connection = ConnectionDB.getConnection();
+        ) ;
+    catch(Exception e)
+
+        {
+            throw new MyAddressBookException(ResponseCode.NOT_FOUND)
+        }
+
+
+    }
+
+    public void showContacts() throws MyAddressBookException {
+        try (Connection connection = ConnectionDB.getConnect();
+             Statement statement = connection.createStatement()) {
+            statement.execute(SELECT_ALL);
+
+            ResultSet resultSet = statement.getResultSet();
+            while (ResultSet.next()) {
+
+            }
+
+        } catch (SQLException e) {
+            throw  new MyAddressBookException(ResponseCode.FAILED_GET_DATA, e.getMessage());
+        }
+    }
+
+    public Contact getContactByID2(int contactId) throws MyAddressBookException {
+        Contact contact = new Contact();
+        try(Connection connection = new ConnectionDB.getConnect() {
+
+        }c
+
+    }
+
+    public void deleteContactById(int contactId) throws MyAddressBookException {
+        try (Connection connection = ConnectionDB.getConnect();
+             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_BY_ID));
+
+    }
 }
