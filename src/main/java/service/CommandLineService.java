@@ -10,7 +10,7 @@ import java.io.IOException;
 public interface CommandLineService {
 
     static void run(BufferedReader bufReader, ContactService service) throws IOException {
-        System.out.println("Welcome to project \"Address Book\" made by Wetal\n");
+        System.out.println("Welcome to project \"Address Book\" based on Lambda.\nMade by Wetal\n");
         loadAllContactFromFile(bufReader, service);
         boolean exit = false;
         do {
