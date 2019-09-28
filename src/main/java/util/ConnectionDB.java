@@ -18,7 +18,7 @@ public class ConnectionDB {
     private static final String FULL_URL = JDBC + HOST_AND_PORT + NAME_DB + SEPARATOR + UNICODE +
             SEPARATOR_AND + JDBC_TIME_ZONE_SHIFT + SEPARATOR_AND + DATA_TIME + SEPARATOR_AND + SERVICE_TIME_ZONE;
 
-    String url = "jdbc:mysql://localhost:3306/addressBooks?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimeZone=UTC";
+    String url = "jdbc:mysql://localhost:3306/addressBook?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimeZone=UTC";
 
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS contacts(" +
             "  'id' INT PRIMARY KEY NOT NULL AUTO_INCREMENT, " +
