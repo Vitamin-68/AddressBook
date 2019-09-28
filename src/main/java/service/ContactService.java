@@ -18,7 +18,7 @@ public interface ContactService {
 
     Contact findById(BufferedReader bufferedReader) throws MyAddressBookException;
 
-    Contact findByName(BufferedReader bufferedReader) throws MyAddressBookException, IOException;
+    void findByName(BufferedReader bufferedReader) throws MyAddressBookException, IOException;
 
     void saveAllContactsToTxtFile() throws IOException;
 

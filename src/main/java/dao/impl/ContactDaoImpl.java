@@ -53,14 +53,24 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
     }
 
 
-    public Contact findByName(String name) throws MyAddressBookException {
+    public void findByName(String name) throws MyAddressBookException {
 
-        return contactTreeSet
+        Set<Contact> filteredSet = contactTreeSet
                 .stream()
                 .filter(contact -> contact.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND,
-                        "Contact with Name = " + name + " not exist.\n"));
+                .collect(Collectors.toSet());
+//                .forEach(contact -> System.out.println(contact));
+//                .findFirst()
+//                .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND,
+//                        "Contact with Name = " + name + " not exist.\n"));
+        if (!filteredSet.isEmpty()) {
+            for (Contact contact : filteredSet) {
+                System.out.println(contact);
+            }
+        } else {
+            throw new MyAddressBookException(ResponseCode.NOT_FOUND,
+                        "Contact with Name = '" + name + "' not exist.\n");
+        }
     }
 
 
@@ -235,14 +245,12 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
 
     @Override
     public void saveAllContactsToDatFile() {
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(Constants.DAT_LIST_PATH);
-            ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(Constants.DAT_LIST_PATH);
+            ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream)) {
             outputStream.writeObject(contactTreeSet.toArray());
 //                    outputStream.writeObject(contactTreeSet);
-            outputStream.close();
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println(e.getMessage());
         }
 
         System.out.println(contactTreeSet.size() + " contacts saved to \"" + Constants.DAT_LIST_PATH + "\".");
@@ -250,9 +258,8 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
 
     @Override
     public Set<Contact> loadAllContactsFromDatFile() {
-        try {
-            FileInputStream fileInputStream = new FileInputStream(Constants.DAT_LIST_PATH);
-            ObjectInputStream inputStream = new ObjectInputStream(fileInputStream);
+        try (FileInputStream fileInputStream = new FileInputStream(Constants.DAT_LIST_PATH);
+            ObjectInputStream inputStream = new ObjectInputStream(fileInputStream)) {
             Object[] arr = (Object[]) inputStream.readObject();
             for (Object contact : arr) {
                 contactTreeSet.add((Contact) contact);
@@ -264,7 +271,7 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
             fileInputStream.close();
             inputStream.close();
             System.out.println(contactTreeSet.size() + " contacts was loaded.");
-            return contactTreeSet;
+//            return contactTreeSet;
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error!\nFile \"" + Constants.TXT_LIST_PATH + "\" not exist.");
         }
@@ -280,7 +287,7 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
                 .findFirst();
         if (sameContactOpt.isPresent()) {
             throw new MyAddressBookException(ResponseCode.OBJECT_EXIST,
-                    "Same contact is exist with ID = " + sameContactOpt.get().getId());
+                    "Same contact is exist with Phone number = " + sameContactOpt.get().getPhoneNumber());
         }
     }
 //

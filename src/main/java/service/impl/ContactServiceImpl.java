@@ -170,12 +170,12 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact findByName(BufferedReader bufReader) throws MyAddressBookException, IOException {
+    public void findByName(BufferedReader bufReader) throws MyAddressBookException, IOException {
         System.out.println("Enter the name of contact:");
         String name = bufReader.readLine().trim();
-        Contact contact = contactDao.findByName(name);
-        System.out.println(contact);
-        return contact;
+//        Contact contact = contactDao.findByName(name);
+        contactDao.findByName(name);
+//        System.out.println(contact);
     }
 
     @Override

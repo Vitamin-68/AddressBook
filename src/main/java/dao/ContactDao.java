@@ -47,7 +47,7 @@ public interface ContactDao {
      * @returnfound contact from the DB
      * @throws MyAddressBookException if contact not found
      */
-    Contact findByName(String name) throws MyAddressBookException;
+    void findByName(String name) throws MyAddressBookException;
 
     /**
      * Output to screen all data of one contact

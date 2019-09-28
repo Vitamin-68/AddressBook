@@ -79,7 +79,7 @@ public interface CommandLineService {
         System.out.println("2. Update contact.");
         System.out.println("3. Delete contact.");
         System.out.println("4. Show all contacts.");
-        System.out.println("5. Show contact.");
+        System.out.println("5. Find contact.");
         System.out.println("6. Save all contact to file.");
         System.out.println("7. Load all contact from file.");
         System.out.println("9. Add 4 contacts for test.");
