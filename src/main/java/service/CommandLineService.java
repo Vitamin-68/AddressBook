@@ -35,7 +35,7 @@ public interface CommandLineService {
                         break;
                     }
                     case Constants.FIND_CONTACT: {
-                        service.findById(bufReader);
+                        findOneContact(bufReader, service);
                         break;
                     }
                     case Constants.TEST: {
@@ -69,47 +69,47 @@ public interface CommandLineService {
         System.out.println("2. Update contact.");
         System.out.println("3. Delete contact.");
         System.out.println("4. Show all contacts.");
-        System.out.println("5. Find contact by ID.");
+        System.out.println("5. Find contact by ...");
         System.out.println("9. Add 4 contacts for test.");
         System.out.println("0. Exit");
     }
 
 
-//    static void findOneContact(BufferedReader bufReader, ContactService service) throws IOException {
-//        boolean exit = false;
-//        do {
-//            System.out.println("Find contact by:");
-//            System.out.println("1. ID.");
-//            System.out.println("2. Name.");
-//            System.out.println("0. Exit to previous menu.");
-//            try {
-//                int numberOfChoice = Integer.parseInt(bufReader.readLine().trim());
-//                switch (numberOfChoice) {
-//                    case Constants.FIND_BY_ID: {
-//                        service.findById(bufReader);
-//                        exit = true;
-//                        break;
-//                    }
-//                    case Constants.FIND_BY_NAME: {
-//                        service.findByName(bufReader);
-//                        exit = true;
-//                        break;
-//                    }
-//                    case Constants.EXIT: {
-//                        exit = true;
-//                        break;
-//                    }
-//                    default: {
-//                        throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
-//                                "You enter wrong num of operation");
-//                    }
-//                }
-//            } catch (NumberFormatException e) {
-//                System.out.println("Please enter ONLY numbers.");
-//            } catch (MyAddressBookException e) {
-//                System.out.println(e.getMessage());
-//            }
-//        } while (!exit);
-//    }
+    static void findOneContact(BufferedReader bufReader, ContactService service) throws IOException {
+        boolean exit = false;
+        do {
+            System.out.println("Find contact by:");
+            System.out.println("1. ID.");
+            System.out.println("2. Name.");
+            System.out.println("0. Exit to previous menu.");
+            try {
+                int numberOfChoice = Integer.parseInt(bufReader.readLine().trim());
+                switch (numberOfChoice) {
+                    case Constants.FIND_BY_ID: {
+                        service.findById(bufReader);
+                        exit = true;
+                        break;
+                    }
+                    case Constants.FIND_BY_NAME: {
+                        service.findByName(bufReader);
+                        exit = true;
+                        break;
+                    }
+                    case Constants.EXIT: {
+                        exit = true;
+                        break;
+                    }
+                    default: {
+                        throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
+                                "You enter wrong num of operation");
+                    }
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter ONLY numbers.");
+            } catch (MyAddressBookException e) {
+                System.out.println(e.getMessage());
+            }
+        } while (!exit);
+    }
 
 }

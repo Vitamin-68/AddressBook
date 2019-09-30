@@ -30,7 +30,7 @@ public class ContactDaoImpl implements ContactDao {
             Connection connection = ConnectionDB.getConnect();
             PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.INSERT_CONTACT);
 //            searchSameContact(newContact);
-            setPreparedStatement(newContact, preparedStatement);
+            setPreparedStatementFromContact(newContact, preparedStatement);
             preparedStatement.execute();
             System.out.println("New contact added successfully:");
             System.out.println(newContact);
@@ -52,16 +52,7 @@ public class ContactDaoImpl implements ContactDao {
             preparedStatement.setInt(1, id);
             preparedStatement.execute();
             ResultSet resultSet = preparedStatement.getResultSet();
-            while (resultSet.next()) {
-                contact.setId(resultSet.getInt(1));
-                contact.setName(resultSet.getString(2));
-                contact.setLastName(resultSet.getString(3));
-                contact.setAge(resultSet.getInt(4));
-                contact.setPhoneNumber(resultSet.getInt(5));
-                contact.setMarried(resultSet.getBoolean(6));
-                contact.setCreateDate(LocalDateTime.parse(resultSet.getString(7)));
-                contact.setUpdateDate(LocalDateTime.parse(resultSet.getString(8)));
-            }
+            setFieldsOfContactFromResultSet(contact, resultSet);
         } catch (SQLException e) {
             throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with ID = " + id + " not exist.\n");
         }
@@ -73,29 +64,20 @@ public class ContactDaoImpl implements ContactDao {
     }
 
 
-//    public Contact findByName(String name) throws MyAddressBookException {
-//        Contact contact = new Contact();
-//        try {
-//            Connection connection = ConnectionDB.getConnect();
-//            PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_NAME);
-//            preparedStatement.setString(2, name);
-//            preparedStatement.execute();
-//            ResultSet resultSet = preparedStatement.getResultSet();
-//            while (resultSet.next()) {
-//                contact.setId(resultSet.getInt(1));
-//                contact.setName(resultSet.getString(2));
-//                contact.setLastName(resultSet.getString(3));
-//                contact.setAge(resultSet.getInt(4));
-//                contact.setPhoneNumber(resultSet.getInt(5));
-//                contact.setMarried(resultSet.getBoolean(6));
-//                contact.setCreateDate(LocalDateTime.parse(resultSet.getString(7)));
-//                contact.setUpdateDate(LocalDateTime.parse(resultSet.getString(8)));
-//            }
-//        } catch (SQLException e) {
-//            throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with name = " + name + " not exist.\n");
-//        }
-//        return contact;
-//
+    public Contact findByName(String name) throws MyAddressBookException {
+        Contact contact = new Contact();
+        try {
+            Connection connection = ConnectionDB.getConnect();
+            PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_NAME);
+            preparedStatement.setString(1, name);
+            preparedStatement.execute();
+            ResultSet resultSet = preparedStatement.getResultSet();
+            setFieldsOfContactFromResultSet(contact,resultSet);
+        } catch (SQLException e) {
+            throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with name = " + name + " not exist.\n");
+        }
+        return contact;
+    }
 
 
     @Override
@@ -103,7 +85,7 @@ public class ContactDaoImpl implements ContactDao {
         try {
             Connection connection = ConnectionDB.getConnect();
             PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.UPDATE_CONTACT_WHERE_ID);
-            setPreparedStatement(contact, preparedStatement);
+            setPreparedStatementFromContact(contact, preparedStatement);
             preparedStatement.setInt(8, contact.getId());
             preparedStatement.execute();
         } catch (SQLException e) {
@@ -177,42 +159,12 @@ public class ContactDaoImpl implements ContactDao {
         }
     }
 
-
-    public void showOneContact(Contact contact) {
-        System.out.println("1. ID: " + contact.getId());
-        System.out.println("2. Name: " + contact.getName());
-        System.out.println("3. Last name: " + contact.getLastName());
-        System.out.println("4. Age: " + contact.getAge());
-        System.out.println("5. Phone number: " + contact.getPhoneNumber());
-        System.out.println("6. Martial status: : " + (contact.isMarried() ? "Married" : "No married"));
-        System.out.println("7. Data of create: " + contact.getCreateDate());
-        System.out.println("8. Data of update: " + contact.getUpdateDate() + "\n");
-    }
-
-
-    @Override
-    public boolean copyContact(Contact copyFromContact, Contact copyToContact) {
-        if (copyFromContact != null && copyToContact != null && !copyFromContact.equals(copyToContact)) {
-            copyToContact.setId(copyFromContact.getId());
-            copyToContact.setName(copyFromContact.getName());
-            copyToContact.setLastName(copyFromContact.getLastName());
-            copyToContact.setAge(copyFromContact.getAge());
-            copyToContact.setPhoneNumber(copyFromContact.getPhoneNumber());
-            copyToContact.setMarried(copyFromContact.isMarried());
-            copyToContact.setCreateDate(copyFromContact.getCreateDate());
-            copyToContact.setUpdateDate(copyFromContact.getUpdateDate());
-            return true;
-        } else
-            return false;
-    }
-
-
 //    private void searchSameContact(Contact contact) throws MyAddressBookException {
 //            throw new MyAddressBookException(ResponseCode.OBJECT_EXIST,
 //                    "Same contact is exist with ID = " + sameContactOpt.get().getId());
 //    }
 
-    private void setPreparedStatement(Contact contact, PreparedStatement preparedStatement) {
+    private void setPreparedStatementFromContact(Contact contact, PreparedStatement preparedStatement) {
         try {
             preparedStatement.setString(1, contact.getName());
             preparedStatement.setString(2, contact.getLastName());
@@ -221,6 +173,23 @@ public class ContactDaoImpl implements ContactDao {
             preparedStatement.setBoolean(5, contact.isMarried());
             preparedStatement.setString(6, contact.getCreateDate().toString());
             preparedStatement.setString(7, contact.getUpdateDate().toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setFieldsOfContactFromResultSet(Contact contact, ResultSet resultSet) {
+        try {
+            while (resultSet.next()) {
+                contact.setId(resultSet.getInt(1));
+                contact.setName(resultSet.getString(2));
+                contact.setLastName(resultSet.getString(3));
+                contact.setAge(resultSet.getInt(4));
+                contact.setPhoneNumber(resultSet.getInt(5));
+                contact.setMarried(resultSet.getBoolean(6));
+                contact.setCreateDate(LocalDateTime.parse(resultSet.getString(7)));
+                contact.setUpdateDate(LocalDateTime.parse(resultSet.getString(8)));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

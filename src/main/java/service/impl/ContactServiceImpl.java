@@ -171,14 +171,14 @@ public class ContactServiceImpl implements ContactService {
         }
     }
 
-//    @Override
-//    public Contact findByName(BufferedReader bufReader) throws MyAddressBookException, IOException {
-//        System.out.println("Enter the name of contact:");
-//        String name = bufReader.readLine().trim();
-//        Contact contact = contactDao.findByName(name);
-//        System.out.println(contact);
-//        return contact;
-//    }
+    @Override
+    public Contact findByName(BufferedReader bufReader) throws MyAddressBookException, IOException {
+        System.out.println("Enter the name of contact:");
+        String name = bufReader.readLine().trim();
+        Contact contact = contactDao.findByName(name);
+        System.out.println(contact);
+        return contact;
+    }
 
     @Override
     public void test() throws MyAddressBookException {

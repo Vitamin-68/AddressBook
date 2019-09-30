@@ -48,18 +48,4 @@ public interface ContactDao {
 //     */
 //    Contact findByName(String name) throws MyAddressBookException;
 
-    /**
-     * Output to screen all data of one contact
-     * @param contact
-     */
-    void showOneContact(Contact contact);
-
-    /**
-     * Copy all fields one contact to other contact
-     * @param copyFromContact  input contact
-     * @param copyToContact output contact
-     * @return copy of contact to super
-     */
-    boolean copyContact(Contact copyFromContact, Contact copyToContact);
-
 }
