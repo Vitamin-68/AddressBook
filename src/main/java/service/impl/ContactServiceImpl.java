@@ -19,7 +19,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact createContact(BufferedReader bufReader) throws IOException {
+    public Contact createContact(BufferedReader bufReader) throws IOException, MyAddressBookException {
         Contact contact = new Contact();
         System.out.println("\nEnter name of new contact:");
         contact.setName(bufReader.readLine().trim());
@@ -35,13 +35,14 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public Contact updateContact(BufferedReader bufReader) throws IOException {
-        Contact contact = new Contact();
+        Contact contact;
         int id;
         while (true) {
             System.out.println("Enter contact's ID for update:");
             try {
                 id = Integer.parseInt(bufReader.readLine().trim());
-                if (contactDao.copyContact(contactDao.findById(id), contact)) {
+                contact = contactDao.findById(id);
+                if (contact.getId() > 0) {
                     System.out.println(contact);
                     break;
                 } else {
@@ -81,6 +82,7 @@ public class ContactServiceImpl implements ContactService {
                     case Constants.SELECT_AGE_CONTACT: {
                         enterAgeInNumbers("Enter new age:", contact, bufReader);
                         contact.setUpdateDate(LocalDateTime.now());
+                        break;
                     }
                     case Constants.SELECT_PHONE_CONTACT: {
                         enterPhoneInNumbers("Enter new number phone:", contact, bufReader);
@@ -115,7 +117,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public boolean removeContact(BufferedReader bufReader) {
+    public boolean removeContact(BufferedReader bufReader) throws MyAddressBookException {
         while (true) {
             System.out.println("Enter ID for delete:");
             try {
@@ -136,21 +138,21 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public void showAllContacts(BufferedReader bufReader) {
-        subMenuShowAllContact();
-        while (true) {
-            System.out.println("Enter number of field to sort\nor press 0 for exit to previous menu:");
-            int number = 0;
-            try {
-                number = Integer.parseInt(bufReader.readLine().trim());
-            } catch (NumberFormatException | IOException e) {
-                System.out.println("Only numbers are required.");
-            }
-            if (number == 0) {
-                return;
-            } else {
-                contactDao.showAllContacts(number);
-            }
-        }
+//        subMenuShowAllContact();
+//        while (true) {
+//            System.out.println("Enter number of field to sort\nor press 0 for exit to previous menu:");
+//            int number = 0;
+//            try {
+//                number = Integer.parseInt(bufReader.readLine().trim());
+//            } catch (NumberFormatException | IOException e) {
+//                System.out.println("Only numbers are required.");
+//            }
+//            if (number == 0) {
+//                return;
+//            } else {
+        contactDao.showAllContacts();
+//            }
+//        }
     }
 
     @Override
@@ -169,17 +171,17 @@ public class ContactServiceImpl implements ContactService {
         }
     }
 
-    @Override
-    public Contact findByName(BufferedReader bufReader) throws MyAddressBookException, IOException {
-        System.out.println("Enter the name of contact:");
-        String name = bufReader.readLine().trim();
-        Contact contact = contactDao.findByName(name);
-        System.out.println(contact);
-        return contact;
-    }
+//    @Override
+//    public Contact findByName(BufferedReader bufReader) throws MyAddressBookException, IOException {
+//        System.out.println("Enter the name of contact:");
+//        String name = bufReader.readLine().trim();
+//        Contact contact = contactDao.findByName(name);
+//        System.out.println(contact);
+//        return contact;
+//    }
 
     @Override
-    public void test() {
+    public void test() throws MyAddressBookException {
         Contact contact1 = new Contact("Tim", "Timov",
                 21, 1234, true,
                 LocalDateTime.now(), LocalDateTime.now());
@@ -198,17 +200,17 @@ public class ContactServiceImpl implements ContactService {
         contactDao.createContact(contact4);
     }
 
-    static void subMenuShowAllContact() {
-        System.out.println("Show all contacts sorted by:");
-        System.out.println("1. ID");
-        System.out.println("2. Name");
-        System.out.println("3. Last name");
-        System.out.println("4. Age");
-        System.out.println("5. Phone number");
-        System.out.println("6. Martial status");
-        System.out.println("7. Data of create");
-        System.out.println("8. Data of update");
-    }
+//    static void subMenuShowAllContact() {
+//        System.out.println("Show all contacts sorted by:");
+//        System.out.println("1. ID");
+//        System.out.println("2. Name");
+//        System.out.println("3. Last name");
+//        System.out.println("4. Age");
+//        System.out.println("5. Phone number");
+//        System.out.println("6. Martial status");
+//        System.out.println("7. Data of create");
+//        System.out.println("8. Data of update");
+//    }
 
     private void enterAgeInNumbers(String string, Contact contact, BufferedReader bufReader) {
         while (true) {
@@ -250,23 +252,4 @@ public class ContactServiceImpl implements ContactService {
         }
     }
 
-    @Override
-    public void saveAllContactsToTxtFile() throws IOException {
-        contactDao.saveAllContactsToTxtFile();
-    }
-
-    @Override
-    public void loadAllContactsFromTxtFile(BufferedReader bufReader) {
-        contactDao.loadAllContactsFromTxtFile(bufReader);
-    }
-
-    @Override
-    public void saveAllContactsToDatFile() {
-        contactDao.saveAllContactsToDatFile();
-    }
-
-    @Override
-    public void loadAllContactsFromDatFile() {
-        contactDao.loadAllContactsFromDatFile();
-    }
 }

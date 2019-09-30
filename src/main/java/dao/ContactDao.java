@@ -11,7 +11,7 @@ public interface ContactDao {
      * @param newContact - a new contact
      * @return created contact/
      */
-    Contact createContact(Contact newContact);
+    Contact createContact(Contact newContact) throws MyAddressBookException;
 
     /**
      * Edit & update contacts from DB
@@ -26,13 +26,12 @@ public interface ContactDao {
      * @param bufReader - a BufferedReader
      * @return
      */
-    boolean removeContact(int id, BufferedReader bufReader);
+    boolean removeContact(int id, BufferedReader bufReader) throws MyAddressBookException;
 
     /**
      * Sort & output to screen all contacts
-     * @param number -  field number for sort
      */
-    void showAllContacts(int number);
+    void showAllContacts();
 
     /** Seek contact in the DB with his ID
      * @param id  - contact's ID for seek in DB
@@ -41,13 +40,13 @@ public interface ContactDao {
      */
     Contact findById(int id) throws MyAddressBookException;
 
-    /**
-     * Seec contact in the DB with his name
-     * @param name  - contact's name for seek in DB
-     * @returnfound contact from the DB
-     * @throws MyAddressBookException if contact not found
-     */
-    Contact findByName(String name) throws MyAddressBookException;
+//    /**
+//     * Seek contact in the DB with his name
+//     * @param name  - contact's name for seek in DB
+//     * @return found contact from the DB
+//     * @throws MyAddressBookException if contact not found
+//     */
+//    Contact findByName(String name) throws MyAddressBookException;
 
     /**
      * Output to screen all data of one contact

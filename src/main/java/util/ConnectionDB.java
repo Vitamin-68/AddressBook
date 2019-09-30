@@ -12,30 +12,31 @@ public class ConnectionDB {
     private static final String UNICODE = "useUnicode=true";
     private static final String JDBC_TIME_ZONE_SHIFT = "useJDBCCompliantTimezoneShift=true";
     private static final String DATA_TIME = "useLegacyDatetimeCode=false";
-    private static final String SERVICE_TIME_ZONE = "serverTimeZone=UTC";
+    private static final String SERVICE_TIME_ZONE = "serverTimezone=UTC";
     private static final String SEPARATOR = "?";
     private static final String SEPARATOR_AND = "&";
     private static final String FULL_URL = JDBC + HOST_AND_PORT + NAME_DB + SEPARATOR + UNICODE +
             SEPARATOR_AND + JDBC_TIME_ZONE_SHIFT + SEPARATOR_AND + DATA_TIME + SEPARATOR_AND + SERVICE_TIME_ZONE;
 
-    String url = "jdbc:mysql://localhost:3306/addressBook?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimeZone=UTC";
+    static final String url = "jdbc:mysql://localhost:3306/addressBook?useUnicode=true&" +
+            "useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS contacts(" +
-            "  'id' INT PRIMARY KEY NOT NULL AUTO_INCREMENT, " +
-            "   'name' VARCHAR(255) NOT NULL , " +
-            "   'last name' VARCHAR(255) NOT NULL , " +
-            "   'age' INT NULL, " +
-            "   'phone number' INT NULL, " +
-            "   'married' BOOLEAN DEFAULT false, " +
-            "   'create_data_time' VARCHAR(45), " +
-            "   'update_data_time' VARCHAR(45))";
+            "   id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, " +
+            "   name VARCHAR(255) NOT NULL, " +
+            "   `last name` VARCHAR(255) NOT NULL, " +
+            "   age INT NULL, " +
+            "   `phone number` INT NULL, " +
+            "   married BOOLEAN DEFAULT false, " +
+            "   create_date_time VARCHAR(45), " +
+            "   update_date_time VARCHAR(45))";
 
     private static final String USER = "root";
     private static final String PASSWORD = "root";
 
     private static Connection connection = null;
 
-    static Connection getConnect() {
+    public static Connection getConnect() {
         if (connection != null) {
             return connection;
         } else {

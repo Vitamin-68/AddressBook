@@ -1,15 +1,16 @@
 package dao.impl;
 
-import constants.Constants;
 import constants.ResponseCode;
 import dao.ContactDao;
-import dao.ContactDaoFileIO;
 import entity.Contact;
 import exceptions.MyAddressBookException;
+import util.ConnectionDB;
+import util.DBQueries;
+
 import java.io.*;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 /**
@@ -19,23 +20,24 @@ import java.util.stream.Collectors;
  * @author Vitamin-68
  * @see dao.ContactDao
  */
-public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
+public class ContactDaoImpl implements ContactDao {
 
-    private static int generator = 0;
-
-    private static Set<Contact> contactTreeSet = new TreeSet<>(Comparator.comparing(Contact::getId));
 
 
     @Override
-    public Contact createContact(Contact newContact) {
+    public Contact createContact(Contact newContact) throws MyAddressBookException {
         try {
-            searchSameContact(newContact);
-            newContact.setId(++generator);
-            contactTreeSet.add(newContact);
+            Connection connection = ConnectionDB.getConnect();
+            PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.INSERT_CONTACT);
+//            searchSameContact(newContact);
+            setPreparedStatement(newContact, preparedStatement);
+            preparedStatement.execute();
             System.out.println("New contact added successfully:");
             System.out.println(newContact);
-        } catch (MyAddressBookException e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
+            e.printStackTrace();
+            throw new MyAddressBookException(ResponseCode.FAILED_SAVE_DB, "Unable save to DB.");
         }
         return newContact;
     }
@@ -43,105 +45,136 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
 
     @Override
     public Contact findById(int id) throws MyAddressBookException {
-
-        return contactTreeSet
-                .stream()
-                .filter(contact -> contact.getId() == id)
-                .findFirst()
-                .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND,
-                        "Contact with ID = " + id + " not exist.\n"));
+        Contact contact = new Contact();
+        try {
+            Connection connection = ConnectionDB.getConnect();
+            PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_ID);
+            preparedStatement.setInt(1, id);
+            preparedStatement.execute();
+            ResultSet resultSet = preparedStatement.getResultSet();
+            while (resultSet.next()) {
+                contact.setId(resultSet.getInt(1));
+                contact.setName(resultSet.getString(2));
+                contact.setLastName(resultSet.getString(3));
+                contact.setAge(resultSet.getInt(4));
+                contact.setPhoneNumber(resultSet.getInt(5));
+                contact.setMarried(resultSet.getBoolean(6));
+                contact.setCreateDate(LocalDateTime.parse(resultSet.getString(7)));
+                contact.setUpdateDate(LocalDateTime.parse(resultSet.getString(8)));
+            }
+        } catch (SQLException e) {
+            throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with ID = " + id + " not exist.\n");
+        }
+        if (Objects.nonNull(contact) && contact.getId() != 0) {
+            return contact;
+        } else {
+            throw new MyAddressBookException(ResponseCode.FAILED_GET_DATA, "Failed get data.");
+        }
     }
 
 
-    public Contact findByName(String name) throws MyAddressBookException {
-
-        return contactTreeSet
-                .stream()
-                .filter(contact -> contact.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND,
-                        "Contact with Name = " + name + " not exist.\n"));
-    }
+//    public Contact findByName(String name) throws MyAddressBookException {
+//        Contact contact = new Contact();
+//        try {
+//            Connection connection = ConnectionDB.getConnect();
+//            PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_NAME);
+//            preparedStatement.setString(2, name);
+//            preparedStatement.execute();
+//            ResultSet resultSet = preparedStatement.getResultSet();
+//            while (resultSet.next()) {
+//                contact.setId(resultSet.getInt(1));
+//                contact.setName(resultSet.getString(2));
+//                contact.setLastName(resultSet.getString(3));
+//                contact.setAge(resultSet.getInt(4));
+//                contact.setPhoneNumber(resultSet.getInt(5));
+//                contact.setMarried(resultSet.getBoolean(6));
+//                contact.setCreateDate(LocalDateTime.parse(resultSet.getString(7)));
+//                contact.setUpdateDate(LocalDateTime.parse(resultSet.getString(8)));
+//            }
+//        } catch (SQLException e) {
+//            throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with name = " + name + " not exist.\n");
+//        }
+//        return contact;
+//
 
 
     @Override
     public Contact updateContact(Contact contact) {
-
-        contactTreeSet = contactTreeSet
-                .stream()
-                .peek(updatedContact -> {
-                    if (Objects.equals(updatedContact.getId(), contact.getId())) {
-                        copyContact(contact, updatedContact);
-                    }
-                })
-                .collect(Collectors.toCollection(TreeSet::new));
+        try {
+            Connection connection = ConnectionDB.getConnect();
+            PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.UPDATE_CONTACT_WHERE_ID);
+            setPreparedStatement(contact, preparedStatement);
+            preparedStatement.setInt(8, contact.getId());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return contact;
     }
 
 
     @Override
-    public boolean removeContact(int id, BufferedReader bufReader) {
-        try {
-            System.out.println(findById(id));
-            System.out.println("Do you want to delete this contact? (y/n):");
-            if (bufReader.readLine().equalsIgnoreCase("y")) {
-                boolean result = contactTreeSet.removeIf(contact -> Objects.equals(contact.getId(), id));
-                if (result) {
-                    System.out.println("Contact with ID = " + id + " deleted successfully.");
-                } else System.out.println("Delete failed");
-                return result;
-            } else {
-                System.out.println("Delete canceled.");
-                return true;
+    public boolean removeContact(int id, BufferedReader bufReader) throws MyAddressBookException {
+//        Contact contact = findById(id);
+//        if (contact.getId() >0) {
+            try {
+                Connection connection = ConnectionDB.getConnect();
+                PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.DELETE_CONTACT_WHERE_ID);
+                preparedStatement.setInt(1, id);
+                int result = preparedStatement.executeUpdate();
+                if (result == -1) {
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                throw new MyAddressBookException(ResponseCode.FAILED_DELETE_CONTACT_FROM_DB, "Delete contact failed");
             }
-        } catch (MyAddressBookException e) {
-            System.out.println(e.getMessage());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        }
 
+//        try {
+//            System.out.println(findById(id));
+//            System.out.println("Do you want to delete this contact? (y/n):");
+//            if (bufReader.readLine().equalsIgnoreCase("y")) {
+//                boolean result = contactTreeSet.removeIf(contact -> Objects.equals(contact.getId(), id));
+//                if (result) {
+//                    System.out.println("Contact with ID = " + id + " deleted successfully.");
+//                } else System.out.println("Delete failed");
+//                return result;
+//            } else {
+//                System.out.println("Delete canceled.");
+//                return true;
+//            }
+//        } catch (MyAddressBookException e) {
+//            System.out.println(e.getMessage());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
         return false;
     }
 
 
     @Override
-    public void showAllContacts(int number) {
-        Comparator<Contact> comparator;
-        switch (number) {
-            case Constants.SORTED_BY_ID:
-                comparator = Comparator.comparing(Contact::getId);
-                break;
-            case Constants.SORTED_BY_NAME:
-                comparator = Comparator.comparing(Contact::getName);
-                break;
-            case Constants.SORTED_BY_LAST_NAME:
-                comparator = Comparator.comparing(Contact::getLastName);
-                break;
-            case Constants.SORTED_BY_AGE:
-                comparator = Comparator.comparing(Contact::getAge);
-                break;
-            case Constants.SORTED_BY_PHONE:
-                comparator = Comparator.comparing(Contact::getPhoneNumber);
-                break;
-            case Constants.SORTED_BY_STATUS:
-                comparator = Comparator.comparing(Contact::isMarried);
-                break;
-            case Constants.SORTED_BY_DATE_OF_CREATE:
-                comparator = Comparator.comparing(Contact::getCreateDate);
-                break;
-            case Constants.SORTED_BY_DATE_OF_UPDATE:
-                comparator = Comparator.comparing(Contact::getUpdateDate);
-                break;
-            case Constants.EXIT:
-                return;
-            default:
-                System.out.println("Wrong number of field.\nContact list will be sorted by ID:");
-                comparator = Comparator.comparing(Contact::getId);
+    public void showAllContacts() {
+        try {
+            Connection connection = ConnectionDB.getConnect();
+            Statement statement = connection.createStatement();
+            statement.execute(DBQueries.SELECT_ALL);
+            ResultSet resultSet = statement.getResultSet();
+            while (resultSet.next()) {
+                System.out.println(
+                        "ID: " + resultSet.getInt(1) + "  " +
+                                "Name: " + resultSet.getString(2) + "  " +
+                                "Last name: " + resultSet.getString(3) + "  " +
+                                "Age: " + resultSet.getInt(4) + "  " +
+                                "Phone number:" + resultSet.getInt(5) + "  " +
+                                "Status: " + (resultSet.getBoolean(6) ? "Married" : "No married") + "  " +
+                                "Create Date: " + resultSet.getString(7) + "  " +
+                                "Update Date: " + resultSet.getString(8));
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        contactTreeSet.stream()
-                .sorted(comparator)
-                .collect(Collectors.toList())
-                .forEach((System.out::println));
     }
 
 
@@ -173,123 +206,23 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
             return false;
     }
 
-    @Override
-    public void saveAllContactsToTxtFile() throws IOException {
-        FileWriter writer = new FileWriter(new File(Constants.TXT_LIST_PATH));
-        for (Contact contact : contactTreeSet) {
-            writer.write(Constants.ID + contact.getId() + Constants.WORD_SEPARATOR +
-                    Constants.NAME + contact.getName() + Constants.WORD_SEPARATOR +
-                    Constants.LAST_NAME + contact.getLastName() + Constants.WORD_SEPARATOR +
-                    Constants.AGE + contact.getAge() + Constants.WORD_SEPARATOR +
-                    Constants.MARRIED + contact.isMarried() + Constants.WORD_SEPARATOR +
-                    Constants.PHONE_NUMBER + contact.getPhoneNumber() + Constants.WORD_SEPARATOR +
-                    Constants.CREATE_DATE + contact.getCreateDate() + Constants.WORD_SEPARATOR +
-                    Constants.UPDATE_DATE + contact.getUpdateDate() + Constants.WORD_SEPARATOR +
-                    Constants.LINE_SEPARATOR);
-        }
-        writer.close();
-        System.out.println(contactTreeSet.size() + " contacts saved to \"" + Constants.TXT_LIST_PATH + "\".");
-    }
 
-    @Override
-    public Set<Contact> loadAllContactsFromTxtFile(BufferedReader bufReader) {
-        try {
-            bufReader = new BufferedReader(new FileReader(Constants.TXT_LIST_PATH));
-
-            bufReader.lines().forEach((String str) -> {
-                Contact contact = new Contact();
-                String[] parameters = str.split(Constants.WORD_SEPARATOR);
-                for (String parameter : parameters) {
-                    if (parameter.contains(Constants.ID)) {
-                        contact.setId(Integer.parseInt(parameter.split(":")[1].trim()));
-                    } else if (parameter.contains(Constants.LAST_NAME)) {
-                        contact.setLastName(parameter.split(":")[1].trim());
-                    } else if (parameter.contains(Constants.NAME)) {
-                        contact.setName(parameter.split(":")[1].trim());
-                    } else if (parameter.contains(Constants.AGE)) {
-                        contact.setAge(Integer.parseInt(parameter.split(":")[1].trim()));
-                    } else if (parameter.contains(Constants.MARRIED)) {
-                        contact.setMarried(Boolean.parseBoolean(parameter.split(":")[1].trim()));
-                    } else if (parameter.contains(Constants.PHONE_NUMBER)) {
-                        contact.setPhoneNumber(Integer.parseInt(parameter.split(":")[1].trim()));
-                    } else if (parameter.contains(Constants.CREATE_DATE)) {
-                        contact.setCreateDate(LocalDateTime.parse((parameter.split(":")[1] +
-                                ":" + parameter.split(":")[2] + ":" + parameter.split(":")[3]).trim()));
-                    } else if (parameter.contains(Constants.UPDATE_DATE)) {
-                        contact.setUpdateDate(LocalDateTime.parse((parameter.split(":")[1] +
-                                ":" + parameter.split(":")[2] + ":" + parameter.split(":")[3]).trim()));
-                    }
-                    contactTreeSet.add(contact);
-                    if (generator < contact.getId()) {
-                        generator = contact.getId();
-                    }
-                }
-            });
-            System.out.println(contactTreeSet.size() + " contacts was loaded.");
-            return contactTreeSet;
-        } catch (FileNotFoundException e) {
-            System.out.println("Error!\nFile \"" + Constants.TXT_LIST_PATH + "\" not exist.");
-            return contactTreeSet;
-        }
-    }
-
-    @Override
-    public void saveAllContactsToDatFile() {
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(Constants.DAT_LIST_PATH);
-            ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream);
-            outputStream.writeObject(contactTreeSet.toArray());
-//                    outputStream.writeObject(contactTreeSet);
-            outputStream.close();
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-
-        System.out.println(contactTreeSet.size() + " contacts saved to \"" + Constants.DAT_LIST_PATH + "\".");
-    }
-
-    @Override
-    public Set<Contact> loadAllContactsFromDatFile() {
-        try {
-            FileInputStream fileInputStream = new FileInputStream(Constants.DAT_LIST_PATH);
-            ObjectInputStream inputStream = new ObjectInputStream(fileInputStream);
-            Object[] arr = (Object[]) inputStream.readObject();
-            for (Object contact : arr) {
-                contactTreeSet.add((Contact) contact);
-                if (generator < ((Contact) contact).getId()) {
-                    generator = ((Contact) contact).getId();
-                }
-            }
-//            contactTreeSet = (Set<Contact>) inputStream.readObject();
-            fileInputStream.close();
-            inputStream.close();
-            System.out.println(contactTreeSet.size() + " contacts was loaded.");
-            return contactTreeSet;
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error!\nFile \"" + Constants.TXT_LIST_PATH + "\" not exist.");
-        }
-        return contactTreeSet;
-    }
-    private void searchSameContact(Contact contact) throws MyAddressBookException {
-        Optional<Contact> sameContactOpt = contactTreeSet.stream()
-                .filter(sameContact -> Objects.equals(sameContact.getPhoneNumber(),
-                        contact.getPhoneNumber()))
-//                .filter(sameContact -> sameContact
-//                        .getPhoneNumber()
-//                        .equals(contact.getPhoneNumber()))
-                .findFirst();
-        if (sameContactOpt.isPresent()) {
-            throw new MyAddressBookException(ResponseCode.OBJECT_EXIST,
-                    "Same contact is exist with ID = " + sameContactOpt.get().getId());
-        }
-    }
-//
-//    private void searchSameContact2(Contact contact) {
-//        contactTreeSet.stream()
-//                .filter(sameContact ->
-//                        sameContact.getPhoneNumber()
-//                                .equals(contact.getPhoneNumber()))
-//                .findFirst()
-//                .ifPresent(MyAddressBookException::new);
+//    private void searchSameContact(Contact contact) throws MyAddressBookException {
+//            throw new MyAddressBookException(ResponseCode.OBJECT_EXIST,
+//                    "Same contact is exist with ID = " + sameContactOpt.get().getId());
 //    }
+
+    private void setPreparedStatement(Contact contact, PreparedStatement preparedStatement) {
+        try {
+            preparedStatement.setString(1, contact.getName());
+            preparedStatement.setString(2, contact.getLastName());
+            preparedStatement.setInt(3, contact.getAge());
+            preparedStatement.setInt(4, contact.getPhoneNumber());
+            preparedStatement.setBoolean(5, contact.isMarried());
+            preparedStatement.setString(6, contact.getCreateDate().toString());
+            preparedStatement.setString(7, contact.getUpdateDate().toString());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

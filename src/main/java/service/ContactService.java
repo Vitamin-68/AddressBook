@@ -8,26 +8,18 @@ import java.io.IOException;
 
 public interface ContactService {
 
-    Contact createContact(BufferedReader bufferedReader) throws IOException;
+    Contact createContact(BufferedReader bufferedReader) throws IOException, MyAddressBookException;
 
     Contact updateContact(BufferedReader bufferedReader) throws IOException;
 
-    boolean removeContact(BufferedReader bufferedReader);
+    boolean removeContact(BufferedReader bufferedReader) throws MyAddressBookException;
 
     void showAllContacts(BufferedReader bufferedReader);
 
     Contact findById(BufferedReader bufferedReader) throws MyAddressBookException;
 
-    Contact findByName(BufferedReader bufferedReader) throws MyAddressBookException, IOException;
+//    Contact findByName(BufferedReader bufferedReader) throws MyAddressBookException, IOException;
 
-    void saveAllContactsToTxtFile() throws IOException;
-
-    void loadAllContactsFromTxtFile(BufferedReader bufReader);
-
-    void saveAllContactsToDatFile() throws IOException;
-
-    void  loadAllContactsFromDatFile();
-
-    void test();
+    void test() throws MyAddressBookException;
 
 }
