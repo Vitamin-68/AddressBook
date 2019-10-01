@@ -7,7 +7,7 @@ import java.util.Objects;
 
 
 public class Contact implements Comparable<Contact>, Serializable {
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd  hh:mm:ss");
+    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd  hh:mm:ss");
     private int id;
     private String name;
     private String lastName;

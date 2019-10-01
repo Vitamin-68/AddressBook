@@ -37,15 +37,16 @@ public class ConnectionDB {
     private static Connection connection = null;
 
     public static Connection getConnect() {
-        if (connection != null) {
-            return connection;
-        } else {
-            try {
+        try {
+            if (connection == null) {
                 connection = DriverManager.getConnection(FULL_URL, USER, PASSWORD);
-            } catch (SQLException e) {
-                e.getMessage();
-                e.printStackTrace();
+            }else if (connection.isClosed()){
+                connection = DriverManager.getConnection(FULL_URL, USER, PASSWORD);
+            } else {
+                return connection;
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return connection;
     }
