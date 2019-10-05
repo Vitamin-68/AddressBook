@@ -52,28 +52,42 @@ public class ContactDaoImpl implements ContactDao {
             ResultSet resultSet = preparedStatement.getResultSet();
             setFieldsOfContactFromResultSet(contact, resultSet);
         } catch (SQLException e) {
-            throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with ID = " + id + " not exist.\n");
+            System.out.println(e.getMessage());
         }
-        if (Objects.nonNull(contact) && contact.getId() != 0) {
+        if (contact.getId() != 0) {
             return contact;
         } else {
-            throw new MyAddressBookException(ResponseCode.FAILED_GET_DATA, "Failed get data.");
+            throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with ID = " + id + " not exist.\n");
         }
     }
 
 
-    public Contact findByName(String name) throws MyAddressBookException {
+    public void findByName(String name) throws MyAddressBookException {
         Contact contact = new Contact();
         try (Connection connection = ConnectionDB.getConnect();
              PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_NAME)) {
             preparedStatement.setString(1, name);
             preparedStatement.execute();
             ResultSet resultSet = preparedStatement.getResultSet();
-            setFieldsOfContactFromResultSet(contact, resultSet);
+            resultSetOutputToScreen(resultSet);
+//            while (resultSet.next()) {
+//                System.out.printf("%3s%3d  %5s%10s  %10s%10s  %4s%3d  %13s%+12d  %8s%10s  %10s%19s  %10s%19s%n",
+//                        "ID:", resultSet.getInt(1),
+//                        "Name:", resultSet.getString(2),
+//                        "Last name:", resultSet.getString(3),
+//                        "Age:", resultSet.getInt(4),
+//                        "Phone number:", resultSet.getInt(5),
+//                        "Status: ", (resultSet.getBoolean(6) ? "Married" : "No married"),
+//                        "Crt Date: ",  resultSet.getString(7).substring(0,19),
+//                        "Upd Date: ", resultSet.getString(8).substring(0,19));
+//            }
+            if (resultSet.getInt(1) == 0) {
+                throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with name = " + name + " not exist.\n");
+            }
         } catch (SQLException e) {
-            throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with name = " + name + " not exist.\n");
+            System.out.println(e.getMessage());
         }
-        return contact;
+
     }
 
 
@@ -93,39 +107,23 @@ public class ContactDaoImpl implements ContactDao {
 
     @Override
     public boolean removeContact(int id, BufferedReader bufReader) throws MyAddressBookException {
-//        Contact contact = findById(id);
-//        if (contact.getId() >0) {
-        try (Connection connection = ConnectionDB.getConnect();
-             PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.DELETE_CONTACT_WHERE_ID)) {
-            preparedStatement.setInt(1, id);
-            int result = preparedStatement.executeUpdate();
-            if (result == -1) {
-                throw new Exception();
+        Contact contact = findById(id);
+        System.out.println(contact);
+        if (contact.getId() > 0 && isDeletionConfirmed(bufReader)) {
+            try (Connection connection = ConnectionDB.getConnect();
+                 PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.DELETE_CONTACT_WHERE_ID)) {
+                preparedStatement.setInt(1, id);
+                int result = preparedStatement.executeUpdate();
+                if (result == 1) {
+                    System.out.println("Contact with ID = " + id + " deleted successfully.");
+                    return true;
+                } else if (result == -1) {
+                    throw new Exception();
+                }
+            } catch (Exception e) {
+                throw new MyAddressBookException(ResponseCode.FAILED_DELETE_CONTACT_FROM_DB, "Delete contact failed");
             }
-        } catch (Exception e) {
-            throw new MyAddressBookException(ResponseCode.FAILED_DELETE_CONTACT_FROM_DB, "Delete contact failed");
         }
-//        }
-
-//        try {
-//            System.out.println(findById(id));
-//            System.out.println("Do you want to delete this contact? (y/n):");
-//            if (bufReader.readLine().equalsIgnoreCase("y")) {
-//                boolean result = contactTreeSet.removeIf(contact -> Objects.equals(contact.getId(), id));
-//                if (result) {
-//                    System.out.println("Contact with ID = " + id + " deleted successfully.");
-//                } else System.out.println("Delete failed");
-//                return result;
-//            } else {
-//                System.out.println("Delete canceled.");
-//                return true;
-//            }
-//        } catch (MyAddressBookException e) {
-//            System.out.println(e.getMessage());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
         return false;
     }
 
@@ -136,17 +134,18 @@ public class ContactDaoImpl implements ContactDao {
              Statement statement = connection.createStatement()) {
             statement.execute(DBQueries.SELECT_ALL);
             ResultSet resultSet = statement.getResultSet();
-            while (resultSet.next()) {
-                System.out.printf("%3s%3d  %5s%10s  %10s%10s  %4s%3d  %13s%+12d  %8s%10s  %10s%19s  %10s%19s%n",
-                        "ID:", resultSet.getInt(1),
-                        "Name:", resultSet.getString(2),
-                        "Last name:", resultSet.getString(3),
-                        "Age:", resultSet.getInt(4),
-                        "Phone number:", resultSet.getInt(5),
-                        "Status: ", (resultSet.getBoolean(6) ? "Married" : "No married"),
-                        "Crt Date: ",  resultSet.getString(7).substring(0,19),
-                        "Upd Date: ", resultSet.getString(8).substring(0,19));
-            }
+            resultSetOutputToScreen(resultSet);
+//            while (resultSet.next()) {
+//                System.out.printf("%3s%3d  %5s%10s  %10s%10s  %4s%3d  %13s%+12d  %8s%10s  %10s%19s  %10s%19s%n",
+//                        "ID:", resultSet.getInt(1),
+//                        "Name:", resultSet.getString(2),
+//                        "Last name:", resultSet.getString(3),
+//                        "Age:", resultSet.getInt(4),
+//                        "Phone number:", resultSet.getInt(5),
+//                        "Status: ", (resultSet.getBoolean(6) ? "Married" : "No married"),
+//                        "Crt Date: ",  resultSet.getString(7).substring(0,19),
+//                        "Upd Date: ", resultSet.getString(8).substring(0,19));
+//            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -197,6 +196,40 @@ public class ContactDaoImpl implements ContactDao {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private boolean isDeletionConfirmed(BufferedReader bufReader) {
+        System.out.println("Do you want to delete this contact? (y/n):");
+        try {
+            while (true) {
+                String str = bufReader.readLine();
+                if (str.trim().equalsIgnoreCase("y")) {
+                    return true;
+                } else if (str.trim().equalsIgnoreCase("n")) {
+                    System.out.println("Delete canceled.");
+                    return false;
+                } else {
+                    System.out.println("Only 'y' or 'n' please.");
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void resultSetOutputToScreen(ResultSet resultSet) throws SQLException {
+        while (resultSet.next()) {
+            System.out.printf("%3s%3d  %5s%10s  %10s%10s  %4s%3d  %13s%+12d  %8s%10s  %10s%19s  %10s%19s%n",
+                    "ID:", resultSet.getInt(1),
+                    "Name:", resultSet.getString(2),
+                    "Last name:", resultSet.getString(3),
+                    "Age:", resultSet.getInt(4),
+                    "Phone number:", resultSet.getInt(5),
+                    "Status: ", (resultSet.getBoolean(6) ? "Married" : "No married"),
+                    "Crt Date: ",  resultSet.getString(7).substring(0,19),
+                    "Upd Date: ", resultSet.getString(8).substring(0,19));
         }
     }
 }

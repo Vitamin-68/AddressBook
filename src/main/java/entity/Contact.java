@@ -122,10 +122,10 @@ public class Contact implements Comparable<Contact>, Serializable {
     @Override
     public String toString() {
         return  "ID=" + id +
-                ",  Name='" + name + '\'' +
-                ",  Last Name='" + lastName + '\'' +
+                ",  Name=" + name +
+                ",  Last Name=" + lastName +
                 ",  Age=" + age +
-                ",  Phone Number='" + phoneNumber + '\'' +
+                ",  Phone Number=" + phoneNumber +
                 ",  Status=" + (married ? "Married" : "No married") +
                 ",  Create Date=" + createDate.format(formatter) +
                 ",  Update Date=" + updateDate.format(formatter);

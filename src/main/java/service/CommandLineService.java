@@ -35,7 +35,7 @@ public interface CommandLineService {
                         break;
                     }
                     case Constants.FIND_CONTACT: {
-                        findOneContact(bufReader, service);
+                        findContact(bufReader, service);
                         break;
                     }
                     case Constants.TEST: {
@@ -50,12 +50,12 @@ public interface CommandLineService {
                     }
                     default: {
                         throw new MyAddressBookException(ResponseCode.WRONG_DATA_TYPE,
-                                "You enter wrong number of operation");
+                                "You enter wrong number of operation.");
                     }
                 }
 
             } catch (NumberFormatException e) {
-                System.out.println("Please enter ONLY numbers");
+                System.out.println("Please enter ONLY numbers.");
             } catch (MyAddressBookException e) {
                 System.out.println(e.getMessage());
             }
@@ -75,7 +75,7 @@ public interface CommandLineService {
     }
 
 
-    static void findOneContact(BufferedReader bufReader, ContactService service) throws IOException {
+    static void findContact(BufferedReader bufReader, ContactService service) throws IOException {
         boolean exit = false;
         do {
             System.out.println("Find contact by:");
@@ -105,7 +105,7 @@ public interface CommandLineService {
                     }
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Please enter ONLY numbers.");
+                System.out.println("Please enter ONLY numbers.\n");
             } catch (MyAddressBookException e) {
                 System.out.println(e.getMessage());
             }

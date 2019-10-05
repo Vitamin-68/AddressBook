@@ -52,7 +52,7 @@ public class ContactServiceImpl implements ContactService {
             } catch (MyAddressBookException e) {
                 System.out.println(e.getMessage());
             } catch (NumberFormatException e) {
-                System.out.println("Please enter ONLY number");
+                System.out.println("Please enter ONLY numbers.\n");
             }
         }
         boolean exit = true;
@@ -108,7 +108,7 @@ public class ContactServiceImpl implements ContactService {
 
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Please enter ONLY number");
+                System.out.println("Please enter ONLY numbers.\n");
             } catch (MyAddressBookException e) {
                 System.out.println(e.getMessage());
             }
@@ -125,11 +125,11 @@ public class ContactServiceImpl implements ContactService {
                 if (contactDao.removeContact(id, bufReader)) {
                     return true;
                 } else {
-                    System.out.println("You enter wrong ID number.");
+//                    System.out.println("You enter wrong ID number.");
                     return false;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Only numbers are required.");
+                System.out.println("Please enter ONLY numbers.\n");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -156,28 +156,26 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact findById(BufferedReader bufReader) throws MyAddressBookException {
+    public Contact findById(BufferedReader bufReader) throws IOException, MyAddressBookException {
+        int id;
         while (true) {
             System.out.println("Enter ID of contact:");
-            int id = 0;
             try {
                 id = Integer.parseInt(bufReader.readLine().trim());
-            } catch (IOException e) {
-                System.out.println("Only numbers are required.");
+                Contact contact = contactDao.findById(id);
+                System.out.println(contact);
+                return contact;
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter ONLY numbers.\n");
             }
-            Contact contact = contactDao.findById(id);
-            System.out.println(contact);
-            return contact;
         }
     }
 
     @Override
-    public Contact findByName(BufferedReader bufReader) throws MyAddressBookException, IOException {
+    public void findByName(BufferedReader bufReader) throws MyAddressBookException, IOException {
         System.out.println("Enter the name of contact:");
         String name = bufReader.readLine().trim();
-        Contact contact = contactDao.findByName(name);
-        System.out.println(contact);
-        return contact;
+                contactDao.findByName(name);
     }
 
     @Override
@@ -219,7 +217,7 @@ public class ContactServiceImpl implements ContactService {
                 contact.setAge(Integer.parseInt(bufReader.readLine().trim()));
                 break;
             } catch (NumberFormatException | IOException e) {
-                System.out.println("Only numbers are required.");
+                System.out.println("Please enter ONLY numbers.\n");
             }
         }
     }
@@ -231,7 +229,7 @@ public class ContactServiceImpl implements ContactService {
                 contact.setPhoneNumber(Integer.parseInt(bufReader.readLine().trim()));
                 break;
             } catch (NumberFormatException | IOException e) {
-                System.out.println("Only numbers are required.");
+                System.out.println("Please enter ONLY numbers.\n");
             }
         }
     }
