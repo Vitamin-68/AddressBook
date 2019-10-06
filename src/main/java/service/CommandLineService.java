@@ -9,12 +9,18 @@ import java.io.IOException;
 
 public interface CommandLineService {
 
+    /**
+     * Main menu processing
+     *
+     * @param bufReader a BufferedReader
+     * @param service   object of class ContactServiceImpl
+     * @throws IOException
+     */
     static void run(BufferedReader bufReader, ContactService service) throws IOException {
-        System.out.println("Welcome to project \"Address Book\" made by Wetal\n");
+        System.out.println("Welcome to project \"Address Book\" based on Stream.\n Made by Wetal\n");
         loadAllContactFromFile(bufReader, service);
         boolean exit = false;
         do {
-            System.out.println("\nEnter number of operation (0-6 or 9 for test):");
             showMenu();
             try {
                 int numberOfChoice = Integer.parseInt(bufReader.readLine().trim());
@@ -36,7 +42,7 @@ public interface CommandLineService {
                         break;
                     }
                     case Constants.FIND_CONTACT: {
-                        findOneContact(bufReader, service);
+                        findContact(bufReader, service);
                         break;
                     }
                     case Constants.SAVE_ALL_CONTACT: {
@@ -75,6 +81,7 @@ public interface CommandLineService {
     }
 
     static void showMenu() {
+        System.out.println("\nEnter number of operation (0-6 or 9 for test):");
         System.out.println("1. Add contact.");
         System.out.println("2. Update contact.");
         System.out.println("3. Delete contact.");
@@ -86,6 +93,14 @@ public interface CommandLineService {
         System.out.println("0. Exit");
     }
 
+    /**
+     * Load contacts from file.
+     * Choiсe of option - load from *.text or *.dat files
+     *
+     * @param bufReader a BufferedReader
+     * @param service   object of class ContactServiceImpl
+     * @throws IOException
+     */
     static void loadAllContactFromFile(BufferedReader bufReader, ContactService service) throws IOException {
         System.out.println("Do you want load all contacts from file?");
         System.out.println("1. Load from file \"" + Constants.TXT_LIST_PATH + "\".");
@@ -124,7 +139,14 @@ public interface CommandLineService {
     }
 
 
-
+    /**
+     * Save contacts to file.
+     * Choiсe of option - save to *.text or *.dat files
+     *
+     * @param bufReader a BufferedReader
+     * @param service   object of class ContactServiceImpl
+     * @throws IOException
+     */
     static void saveAllContactToFile(BufferedReader bufReader, ContactService service) throws IOException {
         System.out.println("Do you want save all contacts to file?");
         System.out.println("1. Save to file \"" + Constants.TXT_LIST_PATH + "\" and Exit.");
@@ -162,7 +184,15 @@ public interface CommandLineService {
         } while (!exit);
     }
 
-    static void findOneContact(BufferedReader bufReader, ContactService service) throws IOException {
+    /**
+     * Seek contacts in DB.
+     * Choiсe of option - search by id or name
+     *
+     * @param bufReader a BufferedReader
+     * @param service   object of class ContactServiceImpl
+     * @throws IOException
+     */
+    static void findContact(BufferedReader bufReader, ContactService service) throws IOException {
         boolean exit = false;
         do {
             System.out.println("Find contact by:");

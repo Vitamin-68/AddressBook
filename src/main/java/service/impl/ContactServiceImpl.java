@@ -81,6 +81,7 @@ public class ContactServiceImpl implements ContactService {
                     case Constants.SELECT_AGE_CONTACT: {
                         enterAgeInNumbers("Enter new age:", contact, bufReader);
                         contact.setUpdateDate(LocalDateTime.now());
+                        break;
                     }
                     case Constants.SELECT_PHONE_CONTACT: {
                         enterPhoneInNumbers("Enter new number phone:", contact, bufReader);
@@ -154,18 +155,26 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact findById(BufferedReader bufReader) throws MyAddressBookException {
+    public Contact findById(BufferedReader bufReader) {
         while (true) {
-            System.out.println("Enter ID of contact:");
-            int id = 0;
+            System.out.println("Enter ID of contact or 0 for exit:");
+            int id;
             try {
                 id = Integer.parseInt(bufReader.readLine().trim());
-            } catch (IOException e) {
+                if (id == 0) {
+                    return new Contact();
+                } else {
+                    Contact contact = contactDao.findById(id);
+                    System.out.println(contact);
+                    return contact;
+                }
+            } catch (NumberFormatException e) {
                 System.out.println("Only numbers are required.");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (MyAddressBookException e) {
+                System.out.println(e.getMessage());
             }
-            Contact contact = contactDao.findById(id);
-            System.out.println(contact);
-            return contact;
         }
     }
 
@@ -173,9 +182,7 @@ public class ContactServiceImpl implements ContactService {
     public void findByName(BufferedReader bufReader) throws MyAddressBookException, IOException {
         System.out.println("Enter the name of contact:");
         String name = bufReader.readLine().trim();
-//        Contact contact = contactDao.findByName(name);
         contactDao.findByName(name);
-//        System.out.println(contact);
     }
 
     @Override
@@ -198,7 +205,7 @@ public class ContactServiceImpl implements ContactService {
         contactDao.createContact(contact4);
     }
 
-    static void subMenuShowAllContact() {
+    private static void subMenuShowAllContact() {
         System.out.println("Show all contacts sorted by:");
         System.out.println("1. ID");
         System.out.println("2. Name");

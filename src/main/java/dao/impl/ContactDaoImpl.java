@@ -6,6 +6,7 @@ import dao.ContactDao;
 import dao.ContactDaoFileIO;
 import entity.Contact;
 import exceptions.MyAddressBookException;
+
 import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -59,17 +60,13 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
                 .stream()
                 .filter(contact -> contact.getName().equalsIgnoreCase(name))
                 .collect(Collectors.toSet());
-//                .forEach(contact -> System.out.println(contact));
-//                .findFirst()
-//                .orElseThrow(() -> new MyAddressBookException(ResponseCode.NOT_FOUND,
-//                        "Contact with Name = " + name + " not exist.\n"));
         if (!filteredSet.isEmpty()) {
             for (Contact contact : filteredSet) {
                 System.out.println(contact);
             }
         } else {
             throw new MyAddressBookException(ResponseCode.NOT_FOUND,
-                        "Contact with Name = '" + name + "' not exist.\n");
+                    "Contact with Name = '" + name + "' not exist.\n");
         }
     }
 
@@ -154,19 +151,6 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
                 .forEach((System.out::println));
     }
 
-
-    public void showOneContact(Contact contact) {
-        System.out.println("1. ID: " + contact.getId());
-        System.out.println("2. Name: " + contact.getName());
-        System.out.println("3. Last name: " + contact.getLastName());
-        System.out.println("4. Age: " + contact.getAge());
-        System.out.println("5. Phone number: " + contact.getPhoneNumber());
-        System.out.println("6. Martial status: : " + (contact.isMarried() ? "Married" : "No married"));
-        System.out.println("7. Data of create: " + contact.getCreateDate());
-        System.out.println("8. Data of update: " + contact.getUpdateDate() + "\n");
-    }
-
-
     @Override
     public boolean copyContact(Contact copyFromContact, Contact copyToContact) {
         if (copyFromContact != null && copyToContact != null && !copyFromContact.equals(copyToContact)) {
@@ -246,9 +230,8 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
     @Override
     public void saveAllContactsToDatFile() {
         try (FileOutputStream fileOutputStream = new FileOutputStream(Constants.DAT_LIST_PATH);
-            ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream)) {
+             ObjectOutputStream outputStream = new ObjectOutputStream(fileOutputStream)) {
             outputStream.writeObject(contactTreeSet.toArray());
-//                    outputStream.writeObject(contactTreeSet);
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -259,7 +242,7 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
     @Override
     public Set<Contact> loadAllContactsFromDatFile() {
         try (FileInputStream fileInputStream = new FileInputStream(Constants.DAT_LIST_PATH);
-            ObjectInputStream inputStream = new ObjectInputStream(fileInputStream)) {
+             ObjectInputStream inputStream = new ObjectInputStream(fileInputStream)) {
             Object[] arr = (Object[]) inputStream.readObject();
             for (Object contact : arr) {
                 contactTreeSet.add((Contact) contact);
@@ -267,36 +250,22 @@ public class ContactDaoImpl implements ContactDao, ContactDaoFileIO {
                     generator = ((Contact) contact).getId();
                 }
             }
-//            contactTreeSet = (Set<Contact>) inputStream.readObject();
-            fileInputStream.close();
-            inputStream.close();
             System.out.println(contactTreeSet.size() + " contacts was loaded.");
-//            return contactTreeSet;
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error!\nFile \"" + Constants.TXT_LIST_PATH + "\" not exist.");
         }
         return contactTreeSet;
     }
+
     private void searchSameContact(Contact contact) throws MyAddressBookException {
         Optional<Contact> sameContactOpt = contactTreeSet.stream()
                 .filter(sameContact -> Objects.equals(sameContact.getPhoneNumber(),
                         contact.getPhoneNumber()))
-//                .filter(sameContact -> sameContact
-//                        .getPhoneNumber()
-//                        .equals(contact.getPhoneNumber()))
                 .findFirst();
         if (sameContactOpt.isPresent()) {
             throw new MyAddressBookException(ResponseCode.OBJECT_EXIST,
                     "Same contact is exist with Phone number = " + sameContactOpt.get().getPhoneNumber());
         }
     }
-//
-//    private void searchSameContact2(Contact contact) {
-//        contactTreeSet.stream()
-//                .filter(sameContact ->
-//                        sameContact.getPhoneNumber()
-//                                .equals(contact.getPhoneNumber()))
-//                .findFirst()
-//                .ifPresent(MyAddressBookException::new);
-//    }
+
 }

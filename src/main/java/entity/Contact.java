@@ -96,7 +96,8 @@ public class Contact implements Comparable<Contact>, Serializable {
         return updateDate;
     }
 
-    public void setUpdateDate(LocalDateTime updateDate) { this.updateDate = updateDate;
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
     }
 
     @Override
@@ -111,8 +112,7 @@ public class Contact implements Comparable<Contact>, Serializable {
                 Objects.equals(name, contact.name) &&
                 Objects.equals(lastName, contact.lastName) &&
                 Objects.equals(createDate, contact.createDate) &&
-                Objects.equals(updateDate, contact.updateDate) &&
-                Objects.equals(formatter, contact.formatter);
+                Objects.equals(updateDate, contact.updateDate);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class Contact implements Comparable<Contact>, Serializable {
 
     @Override
     public String toString() {
-        return  "ID=" + id +
+        return "ID=" + id +
                 ",  Name='" + name + '\'' +
                 ",  Last Name='" + lastName + '\'' +
                 ",  Age=" + age +
