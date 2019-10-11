@@ -13,4 +13,5 @@ public class DBQueries {
     public static final String FIND_CONTACT_BY_NAME = "SELECT * FROM contacts WHERE name = ?";
     public static final String FIND_CONTACT_BY_PHONE_NUMBER = "SELECT * FROM contacts WHERE `phone number` = ?";
     public static final String SELECT_ALL = "SELECT * FROM contacts";
+    public static final String COUNT_ROWS = "SELECT COUNT(*) FROM contacts";
 }

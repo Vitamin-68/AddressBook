@@ -47,5 +47,6 @@ public final class Constants {
     public static final String TXT_LIST_PATH = "Address Book.txt";
     public static final String DAT_LIST_PATH = "Address Book.dat";
 
+    public static final String REGEX_ONLY_NUMBERS = "\\d+";
 
 }

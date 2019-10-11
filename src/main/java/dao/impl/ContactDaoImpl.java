@@ -10,7 +10,6 @@ import util.DBQueries;
 import java.io.*;
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.*;
 
 
 /**
@@ -27,7 +26,8 @@ public class ContactDaoImpl implements ContactDao {
     public Contact createContact(Contact newContact) throws MyAddressBookException {
         try (Connection connection = ConnectionDB.getConnect();
              PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.INSERT_CONTACT)) {
-            if (!isExistSamePhoneNumber(newContact.getPhoneNumber())) {
+
+            if (!isEmptyDB() && !isExistSamePhoneNumber(newContact.getPhoneNumber())) {
                 setPreparedStatementFromContact(newContact, preparedStatement);
                 preparedStatement.execute();
                 System.out.println("New contact added successfully:");
@@ -63,26 +63,15 @@ public class ContactDaoImpl implements ContactDao {
 
 
     public void findByName(String name) throws MyAddressBookException {
-        Contact contact = new Contact();
         try (Connection connection = ConnectionDB.getConnect();
              PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_NAME)) {
             preparedStatement.setString(1, name);
             preparedStatement.execute();
             ResultSet resultSet = preparedStatement.getResultSet();
-            resultSetOutputToScreen(resultSet);
-//            while (resultSet.next()) {
-//                System.out.printf("%3s%3d  %5s%10s  %10s%10s  %4s%3d  %13s%+12d  %8s%10s  %10s%19s  %10s%19s%n",
-//                        "ID:", resultSet.getInt(1),
-//                        "Name:", resultSet.getString(2),
-//                        "Last name:", resultSet.getString(3),
-//                        "Age:", resultSet.getInt(4),
-//                        "Phone number:", resultSet.getInt(5),
-//                        "Status: ", (resultSet.getBoolean(6) ? "Married" : "No married"),
-//                        "Crt Date: ",  resultSet.getString(7).substring(0,19),
-//                        "Upd Date: ", resultSet.getString(8).substring(0,19));
-//            }
-            if (resultSet.getInt(1) == 0) {
-                throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with name = " + name + " not exist.\n");
+            if (resultSet.next()) {
+                resultSetOutputToScreen(resultSet);
+            } else {
+                throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with name = '" + name + "' not exist.\n");
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -134,37 +123,36 @@ public class ContactDaoImpl implements ContactDao {
              Statement statement = connection.createStatement()) {
             statement.execute(DBQueries.SELECT_ALL);
             ResultSet resultSet = statement.getResultSet();
-            resultSetOutputToScreen(resultSet);
-//            while (resultSet.next()) {
-//                System.out.printf("%3s%3d  %5s%10s  %10s%10s  %4s%3d  %13s%+12d  %8s%10s  %10s%19s  %10s%19s%n",
-//                        "ID:", resultSet.getInt(1),
-//                        "Name:", resultSet.getString(2),
-//                        "Last name:", resultSet.getString(3),
-//                        "Age:", resultSet.getInt(4),
-//                        "Phone number:", resultSet.getInt(5),
-//                        "Status: ", (resultSet.getBoolean(6) ? "Married" : "No married"),
-//                        "Crt Date: ",  resultSet.getString(7).substring(0,19),
-//                        "Upd Date: ", resultSet.getString(8).substring(0,19));
-//            }
+            if (resultSet.next()) {
+                resultSetOutputToScreen(resultSet);
+            } else {
+                System.out.println("DB of contacts is empty.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private boolean isExistSamePhoneNumber(int phoneNumber) throws MyAddressBookException {
+    private boolean isExistSamePhoneNumber(String phoneNumber) throws MyAddressBookException {
         try (Connection connection = ConnectionDB.getConnect();
              PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_PHONE_NUMBER)) {
-            preparedStatement.setInt(1, phoneNumber);
+            preparedStatement.setString(1, phoneNumber);
             preparedStatement.execute();
             ResultSet resultSet = preparedStatement.getResultSet();
-            if (resultSet.getInt(5) == phoneNumber) {
-                System.out.println("Same contact is exist with ID = " + resultSet.getInt(1));
-                return true;
+            if (resultSet.next()) {
+                if (resultSet.getString(5).equalsIgnoreCase(phoneNumber)) {
+                    System.out.println("Contact with Phone number = " + resultSet.getString(5) +
+                            " already exist with ID = " + resultSet.getInt(1));
+                    System.out.println("New contact not added.");
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
         } catch (SQLException e) {
-            throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with phone not exist.\n");
+            throw new MyAddressBookException(ResponseCode.FAILED_GET_DATA, "Failed get data from DB.\n");
         }
     }
 
@@ -173,7 +161,7 @@ public class ContactDaoImpl implements ContactDao {
             preparedStatement.setString(1, contact.getName());
             preparedStatement.setString(2, contact.getLastName());
             preparedStatement.setInt(3, contact.getAge());
-            preparedStatement.setInt(4, contact.getPhoneNumber());
+            preparedStatement.setString(4, contact.getPhoneNumber());
             preparedStatement.setBoolean(5, contact.isMarried());
             preparedStatement.setString(6, contact.getCreateDate().toString());
             preparedStatement.setString(7, contact.getUpdateDate().toString());
@@ -189,7 +177,7 @@ public class ContactDaoImpl implements ContactDao {
                 contact.setName(resultSet.getString(2));
                 contact.setLastName(resultSet.getString(3));
                 contact.setAge(resultSet.getInt(4));
-                contact.setPhoneNumber(resultSet.getInt(5));
+                contact.setPhoneNumber(resultSet.getString(5));
                 contact.setMarried(resultSet.getBoolean(6));
                 contact.setCreateDate(LocalDateTime.parse(resultSet.getString(7)));
                 contact.setUpdateDate(LocalDateTime.parse(resultSet.getString(8)));
@@ -220,7 +208,7 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     private void resultSetOutputToScreen(ResultSet resultSet) throws SQLException {
-        while (resultSet.next()) {
+        do {
             System.out.printf("%3s%3d  %5s%10s  %10s%10s  %4s%3d  %13s%+12d  %8s%10s  %10s%19s  %10s%19s%n",
                     "ID:", resultSet.getInt(1),
                     "Name:", resultSet.getString(2),
@@ -228,8 +216,23 @@ public class ContactDaoImpl implements ContactDao {
                     "Age:", resultSet.getInt(4),
                     "Phone number:", resultSet.getInt(5),
                     "Status: ", (resultSet.getBoolean(6) ? "Married" : "No married"),
-                    "Crt Date: ",  resultSet.getString(7).substring(0,19),
-                    "Upd Date: ", resultSet.getString(8).substring(0,19));
+                    "Crt Date: ", resultSet.getString(7).substring(0, 19),
+                    "Upd Date: ", resultSet.getString(8).substring(0, 19));
         }
+        while (resultSet.next());
+    }
+
+    private boolean isEmptyDB() {
+        try (Connection connection = ConnectionDB.getConnect();
+             Statement statement = connection.createStatement()) {
+            statement.execute(DBQueries.COUNT_ROWS);
+            ResultSet resultSet = statement.getResultSet();
+            resultSet.next();
+            return true;
+//                System.out.println("DB of contacts is empty.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

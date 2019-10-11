@@ -12,7 +12,7 @@ public class Contact implements Comparable<Contact>, Serializable {
     private String name;
     private String lastName;
     private int age;
-    private int phoneNumber;
+    private String phoneNumber;
     private boolean married;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
@@ -22,7 +22,7 @@ public class Contact implements Comparable<Contact>, Serializable {
     }
 
     public Contact(String name, String lastName,
-                   int age, int phoneNumber,
+                   int age, String phoneNumber,
                    boolean married,
                    LocalDateTime createDate,
                    LocalDateTime updateTime) {
@@ -67,11 +67,11 @@ public class Contact implements Comparable<Contact>, Serializable {
         this.age = age;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -105,18 +105,17 @@ public class Contact implements Comparable<Contact>, Serializable {
         Contact contact = (Contact) o;
         return id == contact.id &&
                 age == contact.age &&
-                phoneNumber == contact.phoneNumber &&
                 married == contact.married &&
                 Objects.equals(name, contact.name) &&
                 Objects.equals(lastName, contact.lastName) &&
+                Objects.equals(phoneNumber, contact.phoneNumber) &&
                 Objects.equals(createDate, contact.createDate) &&
-                Objects.equals(updateDate, contact.updateDate) &&
-                Objects.equals(formatter, contact.formatter);
+                Objects.equals(updateDate, contact.updateDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, lastName, age, phoneNumber, married, createDate, updateDate, formatter);
+        return Objects.hash(id, name, lastName, age, phoneNumber, married, createDate, updateDate);
     }
 
     @Override

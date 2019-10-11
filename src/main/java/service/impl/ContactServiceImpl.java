@@ -122,12 +122,7 @@ public class ContactServiceImpl implements ContactService {
             System.out.println("Enter ID for delete:");
             try {
                 int id = Integer.parseInt(bufReader.readLine().trim());
-                if (contactDao.removeContact(id, bufReader)) {
-                    return true;
-                } else {
-//                    System.out.println("You enter wrong ID number.");
-                    return false;
-                }
+                return contactDao.removeContact(id, bufReader);
             } catch (NumberFormatException e) {
                 System.out.println("Please enter ONLY numbers.\n");
             } catch (IOException e) {
@@ -181,16 +176,16 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public void test() throws MyAddressBookException {
         Contact contact1 = new Contact("Tim", "Timov",
-                21, 1234, true,
+                21, "1234", true,
                 LocalDateTime.now(), LocalDateTime.now());
         Contact contact2 = new Contact("Dim", "Dimov",
-                38, 5678, false,
+                38, "380671234567", false,
                 LocalDateTime.now(), LocalDateTime.now());
         Contact contact3 = new Contact("Jon", "Jonov",
-                150, 9876, true,
+                150, "380671234568", true,
                 LocalDateTime.now(), LocalDateTime.now());
         Contact contact4 = new Contact("Alex", "Alexov",
-                5, 5432, false,
+                5, "381234569", false,
                 LocalDateTime.now(), LocalDateTime.now());
         contactDao.createContact(contact1);
         contactDao.createContact(contact2);
@@ -226,10 +221,15 @@ public class ContactServiceImpl implements ContactService {
         while (true) {
             System.out.println(string);
             try {
-                contact.setPhoneNumber(Integer.parseInt(bufReader.readLine().trim()));
-                break;
-            } catch (NumberFormatException | IOException e) {
-                System.out.println("Please enter ONLY numbers.\n");
+                String strNumberPhone = bufReader.readLine().trim();
+                if (strNumberPhone.matches(Constants.REGEX_ONLY_NUMBERS)) {
+                    contact.setPhoneNumber(strNumberPhone);
+                    break;
+                } else {
+                    System.out.println("Please enter ONLY numbers.\n");
+                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
             }
         }
     }

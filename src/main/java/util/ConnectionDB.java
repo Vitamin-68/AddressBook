@@ -26,7 +26,7 @@ public class ConnectionDB {
             "   name VARCHAR(255) NOT NULL, " +
             "   `last name` VARCHAR(255) NOT NULL, " +
             "   age INT NULL, " +
-            "   `phone number` INT NULL, " +
+            "   `phone number` VARCHAR(15) NULL, " +
             "   married BOOLEAN DEFAULT false, " +
             "   create_date_time VARCHAR(45), " +
             "   update_date_time VARCHAR(45))";
