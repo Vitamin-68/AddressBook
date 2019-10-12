@@ -7,7 +7,7 @@ import java.util.Objects;
 
 
 public class Contact implements Comparable<Contact>, Serializable {
-    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd  hh:mm:ss");
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd  hh:mm:ss");
     private int id;
     private String name;
     private String lastName;
@@ -95,7 +95,8 @@ public class Contact implements Comparable<Contact>, Serializable {
         return updateDate;
     }
 
-    public void setUpdateDate(LocalDateTime updateDate) { this.updateDate = updateDate;
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
     }
 
     @Override
@@ -120,7 +121,7 @@ public class Contact implements Comparable<Contact>, Serializable {
 
     @Override
     public String toString() {
-        return  "ID=" + id +
+        return "ID=" + id +
                 ",  Name=" + name +
                 ",  Last Name=" + lastName +
                 ",  Age=" + age +

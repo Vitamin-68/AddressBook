@@ -9,6 +9,13 @@ import java.io.IOException;
 
 public interface CommandLineService {
 
+    /**
+     * Main menu processing
+     *
+     * @param bufReader a BufferedReader
+     * @param service   object of class ContactServiceImpl
+     * @throws IOException
+     */
     static void run(BufferedReader bufReader, ContactService service) throws IOException {
         System.out.println("Welcome to project \"Address Book\" based on MySQL.\nMade by Wetal\n");
         boolean exit = false;
@@ -74,7 +81,14 @@ public interface CommandLineService {
         System.out.println("0. Exit");
     }
 
-
+    /**
+     * Seek contacts in DB.
+     * Choice of option - search by id or name
+     *
+     * @param bufReader a BufferedReader
+     * @param service   object of class ContactServiceImpl
+     * @throws IOException
+     */
     static void findContact(BufferedReader bufReader, ContactService service) throws IOException {
         boolean exit = false;
         do {

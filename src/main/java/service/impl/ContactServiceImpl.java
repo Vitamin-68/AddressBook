@@ -18,6 +18,7 @@ public class ContactServiceImpl implements ContactService {
     public ContactServiceImpl(ContactDaoImpl contactDao) {
     }
 
+
     @Override
     public Contact createContact(BufferedReader bufReader) throws IOException, MyAddressBookException {
         Contact contact = new Contact();
@@ -57,7 +58,7 @@ public class ContactServiceImpl implements ContactService {
         }
         boolean exit = true;
         do {
-            System.out.println("Enter number of field for update:");
+            System.out.println("Enter number of field for update\nor 0 for Exit:");
             System.out.println("1 - Name");
             System.out.println("2 - Last name");
             System.out.println("3 - Age");
@@ -97,7 +98,6 @@ public class ContactServiceImpl implements ContactService {
                     case Constants.EXIT: {
                         System.out.println(contact);
                         contactDao.updateContact(contact);
-                        System.out.println("Update is done.");
                         exit = false;
                         break;
                     }
@@ -117,12 +117,13 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public boolean removeContact(BufferedReader bufReader) throws MyAddressBookException {
+    public void removeContact(BufferedReader bufReader) throws MyAddressBookException {
         while (true) {
             System.out.println("Enter ID for delete:");
             try {
                 int id = Integer.parseInt(bufReader.readLine().trim());
-                return contactDao.removeContact(id, bufReader);
+                contactDao.removeContact(id, bufReader);
+                return;
             } catch (NumberFormatException e) {
                 System.out.println("Please enter ONLY numbers.\n");
             } catch (IOException e) {
@@ -136,7 +137,7 @@ public class ContactServiceImpl implements ContactService {
         subMenuShowAllContact();
         while (true) {
             System.out.println("Enter number of field to sort\nor press 0 for exit to previous menu:");
-            int sortFieldNumber = 0;
+            int sortFieldNumber;
             try {
                 sortFieldNumber = Integer.parseInt(bufReader.readLine().trim());
             } catch (NumberFormatException | IOException e) {
@@ -146,13 +147,13 @@ public class ContactServiceImpl implements ContactService {
             if (sortFieldNumber == 0) {
                 return;
             } else {
-        contactDao.showAllContacts(sortFieldNumber);
+                contactDao.showAllContacts(sortFieldNumber);
             }
         }
     }
 
     @Override
-    public Contact findById(BufferedReader bufReader) throws IOException, MyAddressBookException {
+    public void findById(BufferedReader bufReader) throws IOException, MyAddressBookException {
         int id;
         while (true) {
             System.out.println("Enter ID of contact:");
@@ -160,7 +161,7 @@ public class ContactServiceImpl implements ContactService {
                 id = Integer.parseInt(bufReader.readLine().trim());
                 Contact contact = contactDao.findById(id);
                 System.out.println(contact);
-                return contact;
+                return;
             } catch (NumberFormatException e) {
                 System.out.println("Please enter ONLY numbers.\n");
             }
@@ -171,7 +172,7 @@ public class ContactServiceImpl implements ContactService {
     public void findByName(BufferedReader bufReader) throws MyAddressBookException, IOException {
         System.out.println("Enter the name (or part of name) of contact:");
         String name = bufReader.readLine().trim();
-                contactDao.findByName(name);
+        contactDao.findByName(name);
     }
 
     @Override
@@ -186,7 +187,7 @@ public class ContactServiceImpl implements ContactService {
                 150, "380671234568", true,
                 LocalDateTime.now(), LocalDateTime.now());
         Contact contact4 = new Contact("Alex", "Alexov",
-                5, "381234569", false,
+                5, "380671234569", false,
                 LocalDateTime.now(), LocalDateTime.now());
         contactDao.createContact(contact1);
         contactDao.createContact(contact2);
@@ -194,7 +195,7 @@ public class ContactServiceImpl implements ContactService {
         contactDao.createContact(contact4);
     }
 
-    static void subMenuShowAllContact() {
+    private void subMenuShowAllContact() {
         System.out.println("Show all contacts sorted by:");
         System.out.println("1. ID");
         System.out.println("2. Name");

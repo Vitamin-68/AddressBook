@@ -1,7 +1,6 @@
 package exceptions;
 
 import constants.ResponseCode;
-import entity.Contact;
 
 public class MyAddressBookException extends Exception {
     private ResponseCode code;
@@ -21,10 +20,6 @@ public class MyAddressBookException extends Exception {
     public MyAddressBookException() {
         this.code = ResponseCode.NOT_FOUND;
         this.message = NOT_FOUND_MESSAGE;
-            }
-
-    public MyAddressBookException(Contact contact) {
-        System.out.println("Contact is present with ID " + contact.getId());
     }
 
     public ResponseCode getCode() {

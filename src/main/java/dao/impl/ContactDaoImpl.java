@@ -32,7 +32,8 @@ public class ContactDaoImpl implements ContactDao {
                 setPreparedStatementFromContact(newContact, preparedStatement);
                 preparedStatement.execute();
                 System.out.println("New contact added successfully:");
-                System.out.println(newContact);
+            } else {
+                System.out.println("New contact isn't added.");
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -43,51 +44,19 @@ public class ContactDaoImpl implements ContactDao {
     }
 
 
-    @Override
-    public Contact findById(int id) throws MyAddressBookException {
-        Contact contact = new Contact();
-        try (Connection connection = ConnectionDB.getConnect();
-             PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_ID)) {
-            preparedStatement.setInt(1, id);
-            preparedStatement.execute();
-            ResultSet resultSet = preparedStatement.getResultSet();
-            setFieldsOfContactFromResultSet(contact, resultSet);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        if (contact.getId() != 0) {
-            return contact;
-        } else {
-            throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with ID = " + id + " not exist.\n");
-        }
-    }
-
-
-    public void findByName(String name) throws MyAddressBookException {
-        try (Connection connection = ConnectionDB.getConnect();
-             PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_NAME)) {
-            preparedStatement.setString(1, "%" + name + "%");
-            preparedStatement.execute();
-            ResultSet resultSet = preparedStatement.getResultSet();
-            if (resultSet.next()) {
-                resultSetOutputToScreen(resultSet);
-            } else {
-                throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with name = '" + name + "' not exist.\n");
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-    }
-
 
     @Override
-    public Contact updateContact(Contact contact) {
+    public Contact updateContact(Contact contact) throws MyAddressBookException {
         try (Connection connection = ConnectionDB.getConnect();
              PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.UPDATE_CONTACT_WHERE_ID)) {
-            setPreparedStatementFromContact(contact, preparedStatement);
-            preparedStatement.setInt(8, contact.getId());
-            preparedStatement.execute();
+            if (!isExistSamePhoneNumber(contact.getPhoneNumber())) {
+                setPreparedStatementFromContact(contact, preparedStatement);
+                preparedStatement.setInt(8, contact.getId());
+                preparedStatement.execute();
+                System.out.println("Update is done.");
+            } else {
+                System.out.println("Update is failed.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -181,6 +150,42 @@ public class ContactDaoImpl implements ContactDao {
         }
     }
 
+    @Override
+    public Contact findById(int id) throws MyAddressBookException {
+        Contact contact = new Contact();
+        try (Connection connection = ConnectionDB.getConnect();
+             PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_ID)) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.execute();
+            ResultSet resultSet = preparedStatement.getResultSet();
+            setFieldsOfContactFromResultSet(contact, resultSet);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        if (contact.getId() != 0) {
+            return contact;
+        } else {
+            throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with ID = " + id + " not exist.\n");
+        }
+    }
+
+    @Override
+    public void findByName(String name) throws MyAddressBookException {
+        try (Connection connection = ConnectionDB.getConnect();
+             PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_NAME)) {
+            preparedStatement.setString(1, "%" + name + "%");
+            preparedStatement.execute();
+            ResultSet resultSet = preparedStatement.getResultSet();
+            if (resultSet.next()) {
+                resultSetOutputToScreen(resultSet);
+            } else {
+                throw new MyAddressBookException(ResponseCode.NOT_FOUND, "Contact with name = '" + name + "' not exist.\n");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     private boolean isExistSamePhoneNumber(String phoneNumber) throws MyAddressBookException {
         try {
             Connection connection = ConnectionDB.getConnect();
@@ -192,7 +197,6 @@ public class ContactDaoImpl implements ContactDao {
                 if (resultSet.getString(5).equalsIgnoreCase(phoneNumber)) {
                     System.out.println("Contact with Phone number = " + resultSet.getString(5) +
                             " already exist with ID = " + resultSet.getInt(1));
-                    System.out.println("New contact not added.");
                     return true;
                 } else {
                     return false;

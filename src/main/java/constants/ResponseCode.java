@@ -3,7 +3,6 @@ package constants;
 public enum ResponseCode {
 
     WRONG_DATA_TYPE(415),
-    OBJECT_EXIST(302),
     NOT_FOUND(404),
     FAILED_SAVE_DB(410),
     FAILED_GET_DATA(411),
