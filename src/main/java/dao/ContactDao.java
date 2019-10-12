@@ -30,8 +30,9 @@ public interface ContactDao {
 
     /**
      * Sort & output to screen all contacts
+     * @param sortFieldNumber
      */
-    void showAllContacts();
+    void showAllContacts(int sortFieldNumber);
 
     /** Seek contact in the DB with his ID
      * @param id  - contact's ID for seek in DB

@@ -16,7 +16,7 @@ public class CommandLineServiceImpl implements CommandLineService {
     public static void start() throws IOException {
         ConnectionDB.connectAndCreateDataBase();
         CommandLineService.run(bufferedReader, service);
-
+//        ConnectionDB.closeConnection();
     }
 
 }

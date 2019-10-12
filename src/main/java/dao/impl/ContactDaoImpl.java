@@ -1,5 +1,6 @@
 package dao.impl;
 
+import constants.Constants;
 import constants.ResponseCode;
 import dao.ContactDao;
 import entity.Contact;
@@ -26,8 +27,8 @@ public class ContactDaoImpl implements ContactDao {
     public Contact createContact(Contact newContact) throws MyAddressBookException {
         try (Connection connection = ConnectionDB.getConnect();
              PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.INSERT_CONTACT)) {
-
-            if (!isEmptyDB() && !isExistSamePhoneNumber(newContact.getPhoneNumber())) {
+            boolean db = isEmptyDB();
+            if (db || !isExistSamePhoneNumber(newContact.getPhoneNumber())) {
                 setPreparedStatementFromContact(newContact, preparedStatement);
                 preparedStatement.execute();
                 System.out.println("New contact added successfully:");
@@ -65,7 +66,7 @@ public class ContactDaoImpl implements ContactDao {
     public void findByName(String name) throws MyAddressBookException {
         try (Connection connection = ConnectionDB.getConnect();
              PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_NAME)) {
-            preparedStatement.setString(1, name);
+            preparedStatement.setString(1, "%" + name + "%");
             preparedStatement.execute();
             ResultSet resultSet = preparedStatement.getResultSet();
             if (resultSet.next()) {
@@ -118,10 +119,57 @@ public class ContactDaoImpl implements ContactDao {
 
 
     @Override
-    public void showAllContacts() {
+    public void showAllContacts(int sortFieldNumber) {
         try (Connection connection = ConnectionDB.getConnect();
              Statement statement = connection.createStatement()) {
-            statement.execute(DBQueries.SELECT_ALL);
+            String sortFieldString;
+            switch (sortFieldNumber) {
+                case Constants.SORTED_BY_ID: {
+                    System.out.println("Contacts sorted by ID:");
+                    sortFieldString = " ORDER BY id";
+                    break;
+                }
+                case Constants.SORTED_BY_NAME: {
+                    System.out.println("Contacts sorted by Name:");
+                    sortFieldString = " ORDER BY name";
+                    break;
+                }
+                case Constants.SORTED_BY_LAST_NAME: {
+                    System.out.println("Contacts sorted by Last name:");
+                    sortFieldString = " ORDER BY `last name`";
+                    break;
+                }
+                case Constants.SORTED_BY_AGE: {
+                    System.out.println("Contacts sorted by Age:");
+                    sortFieldString = " ORDER BY age";
+                    break;
+                }
+                case Constants.SORTED_BY_PHONE: {
+                    System.out.println("Contacts sorted by Phone number:");
+                    sortFieldString = " ORDER BY `phone number`";
+                    break;
+                }
+                case Constants.SORTED_BY_STATUS: {
+                    System.out.println("Contacts sorted by Marital status:");
+                    sortFieldString = " ORDER BY married";
+                    break;
+                }
+                case Constants.SORTED_BY_DATE_OF_CREATE: {
+                    System.out.println("Contacts sorted by Create date:");
+                    sortFieldString = " ORDER BY create_date_time";
+                    break;
+                }
+                case Constants.SORTED_BY_DATE_OF_UPDATE: {
+                    System.out.println("Contacts sorted by Update date:");
+                    sortFieldString = " ORDER BY update_date_time";
+                    break;
+                }
+                default: {
+                    System.out.println("Wrong number of field, contacts sorted by ID:");
+                    sortFieldString = " ORDER BY id";
+                }
+            }
+            statement.execute(DBQueries.SELECT_ALL + sortFieldString);
             ResultSet resultSet = statement.getResultSet();
             if (resultSet.next()) {
                 resultSetOutputToScreen(resultSet);
@@ -134,8 +182,9 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     private boolean isExistSamePhoneNumber(String phoneNumber) throws MyAddressBookException {
-        try (Connection connection = ConnectionDB.getConnect();
-             PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_PHONE_NUMBER)) {
+        try {
+            Connection connection = ConnectionDB.getConnect();
+            PreparedStatement preparedStatement = connection.prepareStatement(DBQueries.FIND_CONTACT_BY_PHONE_NUMBER);
             preparedStatement.setString(1, phoneNumber);
             preparedStatement.execute();
             ResultSet resultSet = preparedStatement.getResultSet();
@@ -209,12 +258,12 @@ public class ContactDaoImpl implements ContactDao {
 
     private void resultSetOutputToScreen(ResultSet resultSet) throws SQLException {
         do {
-            System.out.printf("%3s%3d  %5s%10s  %10s%10s  %4s%3d  %13s%+12d  %8s%10s  %10s%19s  %10s%19s%n",
+            System.out.printf("%3s%3d  %5s%10s  %10s%10s  %4s%3d  %13s%12s  %8s%10s  %10s%19s  %10s%19s%n",
                     "ID:", resultSet.getInt(1),
                     "Name:", resultSet.getString(2),
                     "Last name:", resultSet.getString(3),
                     "Age:", resultSet.getInt(4),
-                    "Phone number:", resultSet.getInt(5),
+                    "Phone number:", resultSet.getString(5),
                     "Status: ", (resultSet.getBoolean(6) ? "Married" : "No married"),
                     "Crt Date: ", resultSet.getString(7).substring(0, 19),
                     "Upd Date: ", resultSet.getString(8).substring(0, 19));
@@ -223,13 +272,14 @@ public class ContactDaoImpl implements ContactDao {
     }
 
     private boolean isEmptyDB() {
-        try (Connection connection = ConnectionDB.getConnect();
-             Statement statement = connection.createStatement()) {
-            statement.execute(DBQueries.COUNT_ROWS);
+        try {
+            Connection connection = ConnectionDB.getConnect();
+            Statement statement = connection.createStatement();
+            statement.execute(DBQueries.SELECT_ALL);
             ResultSet resultSet = statement.getResultSet();
-            resultSet.next();
-            return true;
-//                System.out.println("DB of contacts is empty.");
+            if (!resultSet.next()) {
+                return true;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
